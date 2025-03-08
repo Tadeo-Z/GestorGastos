@@ -34,7 +34,7 @@ class CountDAO {
     // Actualizar una cuenta por id
     static async updateCount(id, countData) {
         try {
-            const count = Count.findByPk(id);
+            const count = await Count.findByPk(id);
             if(!count) return null;
             
             await count.update(countData);
