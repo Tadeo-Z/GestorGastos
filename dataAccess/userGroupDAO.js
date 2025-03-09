@@ -50,6 +50,30 @@ class UserGroupDAO {
             throw error;
         }
     }
+
+    // Actualizar grupo con usuarios por id
+    static async updateUserGroup(id, userGroupData) {
+        try {
+            const userGroup = await UserGroup.findByPk(id);
+            if(!userGroup) return null;
+
+            await Expense.update(userGroupData);
+            return userGroup;
+        } catch (error) {
+            console.log('Error actualizando el grupo con sus usuarios: ', error);
+            throw error;
+        }
+    }
+
+    static async deleteUserGroup(id) {
+        try {
+            const deleted = await UserGroup.destroy({ where: id });
+            return deleted > 0;
+        } catch (error) {
+            console.log('Error eliminando el grupo con sus usuarios: ', error);
+            throw error;
+        }
+    }
 }
 
 module.exports = UserGroupDAO;
