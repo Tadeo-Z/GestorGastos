@@ -6,13 +6,13 @@ const UserGroup = require('./userGroup');
 const Expense = require('./expense');
 const Count = require('./count');
 
-User.belongsToMany(Group, { through: UserGroup });
-Group.belongsToMany(User, { through: UserGroup });
+User.belongsToMany(Group, { through: UserGroup, foreignKey: 'userId' });
+Group.belongsToMany(User, { through: UserGroup, foreignKey: 'groupId' });
 
-User.hasMany(Expense, { foreignKey: 'userID' });
-Expense.belongsTo(User, { foreignKey: 'userID' });
+User.hasMany(Expense, { foreignKey: 'userId' });
+Expense.belongsTo(User, { foreignKey: 'userId' });
 
-Expense.belongsTo(Count, { foreignKey: 'countID' });
-Count.hasMany(Expense, { foreignKey: 'countID' });
+Expense.belongsTo(Count, { foreignKey: 'countId' });
+Count.hasMany(Expense, { foreignKey: 'countId' });
 
 module.exports = {User, Group, UserGroup, Expense, Count};
