@@ -57,4 +57,4 @@ class GroupDAO {
     }
 }
 
-module.exports = new GroupDAO();
+module.exports = GroupDAO;

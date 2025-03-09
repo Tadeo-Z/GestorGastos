@@ -57,4 +57,4 @@ class CountDAO {
     }
 }
 
-module.exports = new CountDAO();
+module.exports = CountDAO;

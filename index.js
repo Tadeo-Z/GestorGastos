@@ -1,7 +1,11 @@
 const UserDAO = require('./dataAccess/userDAO');
+const GroupDAO = require('./dataAccess/groupDAO');
+const ExpenseDAO = require('./dataAccess/expenseDAO');
+const CountDAO = require('./dataAccess/countDAO');
+const UserGroupDAO = require('./dataAccess/userGroupDAO');
 require('dotenv').config();
 const sequelize = require('./config/db');
-const User = require('./models/user');
+const { User, Group, UserGroup, Count, Expense } = require('./models');
 
 // Sincronizar el modelo con la base de datos
 sequelize.sync({ force: true }).then(() => {
@@ -25,7 +29,15 @@ async function testDAO() {
             maternalSurname: 'Bernal',
             entryDate: new Date()
         });
+        // Crear otro usuario
+        const newUser2 = await UserDAO.createUser({
+            name: 'Samuel',
+            paternalSurname: 'Vega',
+            maternalSurname: 'Hernandez',
+            entryDate: new Date()
+        })
         console.log('Usuario creado: ', newUser.toJSON());
+        console.log('Usuario creado: ', newUser2.toJSON());
 
         // Obtener todos los usuarios
         const users = await UserDAO.getAllUsers();
@@ -40,8 +52,8 @@ async function testDAO() {
         console.log('Usuario actualizado: ', updatedUser ? updatedUser.toJSON() : 'No encontrado');
 
         // Eliminar usuario
-        const deleted = await UserDAO.deleteUser(newUser.id);
-        console.log(deleted ? 'Usuario eliminado' : 'Usuario no encontrado');
+        //const deleted = await UserDAO.deleteUser(newUser.id);
+        //console.log(deleted ? 'Usuario eliminado' : 'Usuario no encontrado');
     } catch (error) {
         console.error('Error probando el acceso a datos', error);
     } finally {

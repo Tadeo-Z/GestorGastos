@@ -57,4 +57,4 @@ class UserDAO {
     }
 }
 
-module.exports = new UserDAO();
+module.exports = UserDAO;

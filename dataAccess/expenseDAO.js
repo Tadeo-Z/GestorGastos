@@ -57,4 +57,4 @@ class ExpenseDAO {
     }
 }
 
-module.exports = new ExpenseDAO();
+module.exports = ExpenseDAO;

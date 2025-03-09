@@ -14,6 +14,12 @@ const Expense = sequelize.define('Expense', {
     quoteDate:  {
         type: DataTypes.DATE,
         allowNull: false
+    },
+    paid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        //'0' no pagado, '1' está pagado
+        defaultValue: 0
     }
 }, {
     timestamps: false
