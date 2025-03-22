@@ -1,18 +1,19 @@
 const { AppError } = require('../util/AppError');
 const UserDAO = require('../dataAccess/userDAO');
 
-const getUsers = (req, res) => {
+const getUsers = async(req, res) => {
     try {
-        res.json(UserDAO.getAllUsers());
+        const users = await UserDAO.getAllUsers();
+        res.json(users.map(user => user.toJSON()));
     } catch (error) {
         throw new AppError('No se pudieron obtener los usuarios', 500);
     }
 }
 
-const getUser = (req, res) => {
+const getUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const user = UserDAO.getUserById(id);
+        const user = await UserDAO.getUserById(id);
 
         res.json(user);
     } catch (error) {
@@ -20,7 +21,7 @@ const getUser = (req, res) => {
     }
 }
 
-const addUser = (req, res) => {
+const addUser = async(req, res) => {
     try {
         const { name, paternalSurname, maternalSurname, entryDate } = req.body;
 
@@ -35,7 +36,7 @@ const addUser = (req, res) => {
             entryDate: entryDate
         }
 
-        UserDAO.createUser(user);
+        await UserDAO.createUser(user);
         res.json(user);
     } catch (error) {
         throw new AppError('No se pudo agregar el usuario', 500);
@@ -43,7 +44,7 @@ const addUser = (req, res) => {
     
 }
 
-const updateUser = (req, res) => {
+const updateUser = async(req, res) => {
     try {
         const { id } = req.params;
         const { name, paternalSurname, maternalSurname, entryDate } = req.body;
@@ -59,14 +60,14 @@ const updateUser = (req, res) => {
             entryDate: entryDate
         }
 
-        UserDAO.updateUser(id, user);
+        await UserDAO.updateUser(id, user);
         res.json(user);
     } catch (error) {
         throw new AppError(`No se pudo actualizar el usuario ${id}`, 500);
     }
 }
 
-const deleteUser = (req, res) => {
+const deleteUser = async(req, res) => {
     try {
         const { id } = req.params;
         const user = UserDAO.getUserById(id)
@@ -75,7 +76,7 @@ const deleteUser = (req, res) => {
             throw new AppError('Usuario no encontrado', 404);
         }
 
-        UserDAO.deleteUser(id);
+        await UserDAO.deleteUser(id);
         res.status(200).json({ message: 'Usuario eliminado correcta'} );
     } catch (error) {
         throw new AppError(`No se pudo eliminar el usuario ${id}`, 500);
