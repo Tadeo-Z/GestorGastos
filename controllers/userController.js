@@ -70,14 +70,14 @@ const updateUser = async(req, res) => {
 const deleteUser = async(req, res) => {
     try {
         const { id } = req.params;
-        const user = UserDAO.getUserById(id)
+        const user = await UserDAO.getUserById(id)
 
         if(!user) {
             throw new AppError('Usuario no encontrado', 404);
         }
 
         await UserDAO.deleteUser(id);
-        res.status(200).json({ message: 'Usuario eliminado correcta'} );
+        res.status(200).json({ message: 'Usuario eliminado correctamente'} );
     } catch (error) {
         throw new AppError(`No se pudo eliminar el usuario ${id}`, 500);
     }
