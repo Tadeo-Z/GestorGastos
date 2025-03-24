@@ -1,14 +1,17 @@
 const { AppError } = require('../util/AppError');
 const UserDAO = require('../dataAccess/userDAO');
+const { auth, generateToken } = require('../util/auth');
 
-const getUsers = async(req, res) => {
+
+const getUsers = async (req, res, next) => {
     try {
         const users = await UserDAO.getAllUsers();
-        res.json(users.map(user => user.toJSON()));
+        res.status(200).json(users.map(user => user.toJSON())); // 200 OK
     } catch (error) {
-        throw new AppError('No se pudieron obtener los usuarios', 500);
+        next(new AppError('No se pudieron obtener los usuarios', 500)); // Enviar al middleware de manejo de errores
     }
-}
+};
+
 
 const getUser = async (req, res) => {
     try {
@@ -21,28 +24,27 @@ const getUser = async (req, res) => {
     }
 }
 
-const addUser = async(req, res) => {
+const addUser = async (req, res, next) => {
     try {
         const { name, paternalSurname, maternalSurname, entryDate } = req.body;
 
-        if(!name || !paternalSurname || !maternalSurname || !entryDate) {
-            throw new AppError('Faltan campos obligatorios', 500);
+        if (!name || !paternalSurname || !maternalSurname || !entryDate) {
+            return next(new AppError('Faltan campos obligatorios', 400));
         }
 
-        const user = {
-            name: name,
-            paternalSurname: paternalSurname,
-            maternalSurname: maternalSurname,
-            entryDate: entryDate
-        }
+        const user = await UserDAO.createUser({
+            name,
+            paternalSurname,
+            maternalSurname,
+            entryDate,
+        });
 
-        await UserDAO.createUser(user);
-        res.json(user);
+        res.status(201).json(user); // 201 Created
     } catch (error) {
-        throw new AppError('No se pudo agregar el usuario', 500);
+        next(new AppError('No se pudo agregar el usuario', 500));
     }
-    
-}
+};
+
 
 const updateUser = async(req, res) => {
     try {
@@ -67,26 +69,54 @@ const updateUser = async(req, res) => {
     }
 }
 
-const deleteUser = async(req, res) => {
+const deleteUser = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const user = await UserDAO.getUserById(id)
 
-        if(!user) {
-            throw new AppError('Usuario no encontrado', 404);
+        const user = await UserDAO.getUserById(id);
+        if (!user) {
+            return next(new AppError('Usuario no encontrado', 404));
         }
 
         await UserDAO.deleteUser(id);
-        res.status(200).json({ message: 'Usuario eliminado correctamente'} );
+        res.status(204).send(); // 204 No Content, no retorna cuerpo
     } catch (error) {
-        throw new AppError(`No se pudo eliminar el usuario ${id}`, 500);
+        next(new AppError('No se pudo eliminar el usuario', 500));
     }
-}
+};
+
+
+
+const loginUser = async (req, res, next) => {
+    const { name, password } = req.body;
+    console.log('Datos recibidos:', { name, password }); // Verifica los datos enviados
+
+    try {
+        const user = await UserDAO.getUserByName(name); // Busca al usuario
+        console.log('Usuario encontrado:', user); // Muestra el usuario encontrado
+
+        if (!user || user.password !== password) {
+            console.log('Credenciales inválidas');
+            return res.status(401).json({ message: 'Credenciales inválidas' });
+        }
+
+        const token = generateToken(user);
+        console.log('Token generado:', token); // Verifica el token generado
+        res.status(200).json({ token });
+    } catch (error) {
+        console.error('Error al autenticar:', error); // Muestra el error en consola
+        next(new AppError('Error al autenticar al usuario', 500));
+    }
+};
+
+
 
 module.exports = {
     getUsers,
     getUser,
     addUser,
     updateUser,
-    deleteUser
-}
+    deleteUser,
+    loginUser,
+};
+

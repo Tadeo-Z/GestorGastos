@@ -22,6 +22,10 @@ const User = sequelize.define('User', {
     entryDate: {
         type: DataTypes.DATE,
         allowNull: false
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false // Agregamos el campo para contraseñas
     }
 }, {
     timestamps: false
