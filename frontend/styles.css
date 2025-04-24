@@ -1,0 +1,35 @@
+body {
+    padding: 0;
+    margin: 0;
+    background-color: #2F2F2F;
+}
+
+.lateral {
+    background-color: #2F2F2F;
+    display: flex;
+    margin-right: 94%;
+    padding: 0;
+}
+
+.lateral ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 20px;
+}
+
+.lateral ul li {
+    display: flex;
+    padding: 1px;
+}
+
+.lateral ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+.lateral ul li a:active {
+    background-color: #AC8647;
+    text-decoration: none;
+    color: white;
+}
