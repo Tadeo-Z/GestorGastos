@@ -1,10 +1,10 @@
 import { AuthService } from "./auth.service.js";
 
-export class UserService {
-    #urlService = 'http://localhost:3000/api/users/';
+export class CountService {
+    #urlService = 'http://localhost:3000/api/counts/';
     #authService = new AuthService();
 
-    async obtenerUsuarios() {
+    async obtenerCuentas() {
         const token = this.#authService.obtenerToken();
 
         let response = await fetch(this.#urlService, {
@@ -21,10 +21,10 @@ export class UserService {
         return json;
     }
 
-    async obtenerUsuario(userId) {
+    async obtenerCuenta(countId) {
         const token = this.#authService.obtenerToken();
 
-        let response = await fetch(this.#urlService + userId, {
+        let response = await fetch(this.#urlService + countId, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -38,15 +38,13 @@ export class UserService {
         return json;
     }
 
-    async agregarUsuario(name, paternalSurname, maternalSurname, entryDate, password) {
+    async agregarCuenta(total, startDate, endDate) {
         const token = this.#authService.obtenerToken();
 
-        const nuevoUsuario = {
-            name,
-            paternalSurname,
-            maternalSurname,
-            entryDate,
-            password
+        const nuevaCuenta = {
+            total,
+            startDate,
+            endDate
         };
 
         let response = await fetch(this.#urlService, {
@@ -55,7 +53,7 @@ export class UserService {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(nuevoUsuario)
+            body: JSON.stringify(nuevaCuenta)
         });
 
         if(!response.ok) {
@@ -66,15 +64,13 @@ export class UserService {
         return json;
     }
 
-    async editarUsuario(name, paternalSurname, maternalSurname, entryDate, password) {
+    async editarCuenta(total, startDate, endDate) {
         const token = this.#authService.obtenerToken();
 
-        const nuevoUsuario = {
-            name,
-            paternalSurname,
-            maternalSurname,
-            entryDate,
-            password
+        const nuevaCuenta = {
+            total,
+            startDate,
+            endDate
         };
 
         let response = await fetch(this.#urlService, {
@@ -83,7 +79,7 @@ export class UserService {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(nuevoUsuario)
+            body: JSON.stringify(nuevaCuenta)
         });
 
         if(!response.ok) {
@@ -94,10 +90,10 @@ export class UserService {
         return json;
     }
 
-    async eliminarUsuario(userId) {
+    async eliminarCuenta(countId) {
         const token = this.#authService.obtenerToken();
 
-        let response = await fetch(this.#urlService + userId, {
+        let response = await fetch(this.#urlService + countId, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`

@@ -1,16 +1,16 @@
 import { AuthService } from "./auth.service.js";
 
-export class UserService {
-    #urlService = 'http://localhost:3000/api/users/';
+export class GroupService {
+    #urlService = 'http://localhost:3000/api/groups/';
     #authService = new AuthService();
 
-    async obtenerUsuarios() {
+    async obtenerGrupos() {
         const token = this.#authService.obtenerToken();
 
         let response = await fetch(this.#urlService, {
             headers: {
                 Authorization: `Bearer ${token}`
-            },
+            }
         });
 
         if(!response.ok) {
@@ -21,10 +21,10 @@ export class UserService {
         return json;
     }
 
-    async obtenerUsuario(userId) {
+    async obtenerGrupo(groupId) {
         const token = this.#authService.obtenerToken();
 
-        let response = await fetch(this.#urlService + userId, {
+        let response = await fetch(this.#urlService + groupId, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -38,15 +38,12 @@ export class UserService {
         return json;
     }
 
-    async agregarUsuario(name, paternalSurname, maternalSurname, entryDate, password) {
+    async agregarGrupo(name, description) {
         const token = this.#authService.obtenerToken();
 
-        const nuevoUsuario = {
+        const nuevoGrupo = {
             name,
-            paternalSurname,
-            maternalSurname,
-            entryDate,
-            password
+            description
         };
 
         let response = await fetch(this.#urlService, {
@@ -55,7 +52,7 @@ export class UserService {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(nuevoUsuario)
+            body: JSON.stringify(nuevoGrupo)
         });
 
         if(!response.ok) {
@@ -66,15 +63,12 @@ export class UserService {
         return json;
     }
 
-    async editarUsuario(name, paternalSurname, maternalSurname, entryDate, password) {
+    async editarGrupo(name, description) {
         const token = this.#authService.obtenerToken();
 
-        const nuevoUsuario = {
+        const nuevoGrupo = {
             name,
-            paternalSurname,
-            maternalSurname,
-            entryDate,
-            password
+            description
         };
 
         let response = await fetch(this.#urlService, {
@@ -83,7 +77,7 @@ export class UserService {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(nuevoUsuario)
+            body: JSON.stringify(nuevoGrupo)
         });
 
         if(!response.ok) {
@@ -94,10 +88,10 @@ export class UserService {
         return json;
     }
 
-    async eliminarUsuario(userId) {
+    async eliminarGrupo(groupId) {
         const token = this.#authService.obtenerToken();
 
-        let response = await fetch(this.#urlService + userId, {
+        let response = await fetch(this.#urlService + groupId, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`

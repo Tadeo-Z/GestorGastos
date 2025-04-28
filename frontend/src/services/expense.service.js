@@ -1,10 +1,10 @@
 import { AuthService } from "./auth.service.js";
 
-export class UserService {
-    #urlService = 'http://localhost:3000/api/users/';
+export class ExepenseService {
+    #urlService = 'http://localhost:3000/api/expenses/';
     #authService = new AuthService();
 
-    async obtenerUsuarios() {
+    async obtenerGastos() {
         const token = this.#authService.obtenerToken();
 
         let response = await fetch(this.#urlService, {
@@ -21,10 +21,10 @@ export class UserService {
         return json;
     }
 
-    async obtenerUsuario(userId) {
+    async obtenerGasto(expenseId) {
         const token = this.#authService.obtenerToken();
 
-        let response = await fetch(this.#urlService + userId, {
+        let response = await fetch(this.#urlService + expenseId, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -38,15 +38,15 @@ export class UserService {
         return json;
     }
 
-    async agregarUsuario(name, paternalSurname, maternalSurname, entryDate, password) {
+    async agregarGasto(amount, quoteDate, paid, userId, countId) {
         const token = this.#authService.obtenerToken();
 
-        const nuevoUsuario = {
-            name,
-            paternalSurname,
-            maternalSurname,
-            entryDate,
-            password
+        const nuevoGasto = {
+            amount,
+            quoteDate,
+            paid,
+            userId,
+            countId
         };
 
         let response = await fetch(this.#urlService, {
@@ -55,7 +55,7 @@ export class UserService {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(nuevoUsuario)
+            body: JSON.stringify(nuevoGasto)
         });
 
         if(!response.ok) {
@@ -66,15 +66,15 @@ export class UserService {
         return json;
     }
 
-    async editarUsuario(name, paternalSurname, maternalSurname, entryDate, password) {
+    async editarGasto(amount, quoteDate, paid, userId, countId) {
         const token = this.#authService.obtenerToken();
 
-        const nuevoUsuario = {
-            name,
-            paternalSurname,
-            maternalSurname,
-            entryDate,
-            password
+        const nuevoGasto = {
+            amount,
+            quoteDate,
+            paid,
+            userId,
+            countId
         };
 
         let response = await fetch(this.#urlService, {
@@ -83,7 +83,7 @@ export class UserService {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(nuevoUsuario)
+            body: JSON.stringify(nuevoGasto)
         });
 
         if(!response.ok) {
@@ -94,10 +94,10 @@ export class UserService {
         return json;
     }
 
-    async eliminarUsuario(userId) {
+    async eliminarGasto(expenseId) {
         const token = this.#authService.obtenerToken();
 
-        let response = await fetch(this.#urlService + userId, {
+        let response = await fetch(this.#urlService + expenseId, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`

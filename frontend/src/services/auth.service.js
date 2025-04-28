@@ -1,5 +1,5 @@
 export class AuthService {
-    #urlService = 'http://localhost:3000/auth/login';
+    #urlService = 'http://localhost:3000/api/auth/login/';
 
     async iniciarSesion(name, password) {
         try {
