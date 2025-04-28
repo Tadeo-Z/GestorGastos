@@ -4,32 +4,19 @@ body {
     background-color: #2F2F2F;
 }
 
-.lateral {
-    background-color: #2F2F2F;
-    display: flex;
-    margin-right: 94%;
-    padding: 0;
+.sidebar {
+    width: 100px;
+    background: #2F2F2F;
+    padding: 20px;
 }
 
-.lateral ul {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    margin: 20px;
+.menu-item {
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
 }
 
-.lateral ul li {
-    display: flex;
-    padding: 1px;
-}
-
-.lateral ul li a {
-    text-decoration: none;
-    color: white;
-}
-
-.lateral ul li a:active {
-    background-color: #AC8647;
-    text-decoration: none;
-    color: white;
+.menu-item:hover {
+    background: #0af76c98;
+    border-radius: 25px;
 }
