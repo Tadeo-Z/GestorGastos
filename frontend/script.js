@@ -1,3 +1,7 @@
-import { LateralComponent } from "./lateral/lateral.js";
-
-window.customElements.define('lateral-info', LateralComponent);
+// import { LateralComponent } from "./lateral/lateral.js";
+import './src/components/login-form.js';
+import './src/components/home-screen.js';
+import './src/components/deudas-view.js';
+import './src/components/grupos-view.js';
+import './src/components/grupo-chat-view.js';
+import './src/components/contactos-view.js';

@@ -4,16 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor Gastos</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./styles.css">
     <script type="module" src="./script.js"></script>
 </head>
 <body>
-    <div class="sidebar">
+    <!-- <div class="sidebar">
         <div class="menu-item" data-route="inicio">Inicio</div>
         <div class="menu-item" data-route="deudas">Deudas</div>
         <div class="menu-item" data-route="grupos">Grupos</div>
         <div class="menu-item" data-route="contactos">Contactos</div>
         <div class="menu-item" data-route="reportes">Reportes</div>
-    </div>
+    </div> -->
+
+    <header>
+        <h1>Bienvenido a tu app financiera</h1>
+    </header>
+
+    <main>
+        <login-form></login-form>
+        <home-screen></home-screen>
+        <deudas-view></deudas-view>
+        <grupos-view></grupos-view>
+        <groupo-chat-view grupo-id=""></groupo-chat-view>
+        <contactos-view></contactos-view>
+    </main>
 </body>
 </html>
