@@ -82,10 +82,26 @@ const deleteExpense = async(req, res) => {
     }
 }
 
+const payExpense = async(req, res) => {
+    try {
+        const { id } = req.params;
+        const expense = await ExpenseDAO.pagarExpense(id);
+
+        if(!expense) {
+            throw new AppError('Gasto no encontrado', 404);
+        }
+
+        res.status(200).json({ message: 'Gasto pagado correctamente' });
+    } catch (error) {
+        throw new AppError(`No se pudo pagar el gasto ${id}`, 500);
+    }
+}
+
 module.exports = {
     getExpenses,
     getExpense,
     addExpense,
     updateExpense,
-    deleteExpense
+    deleteExpense,
+    payExpense
 }

@@ -60,7 +60,7 @@ export class DeudasView extends HTMLElement {
         container.querySelectorAll(".pagar-btn").forEach(btn => {
             btn.addEventListener("click", async (e) => {
                 const id = e.target.dataset.id;
-                //await this.pagarDeuda(id);
+                await this.pagarDeuda(id);
             });
         });
     }
@@ -69,17 +69,18 @@ export class DeudasView extends HTMLElement {
         try {
             const token = localStorage.getItem('authToken');
 
-            const res = await fetch(`http://localhost:3000/api/expenses`, {
-                method: 'POST',
+            const res = await fetch(`http://localhost:3000/api/expenses/${id}/pay`, {
+                method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
-        });
+            });
 
             if (res.ok) {
                 alert("Deuda pagada correctamente.");
                 this.loadDeudas(); // Recargar
+                location.reload();
             } else {
                 alert("Error al pagar la deuda.");
             }

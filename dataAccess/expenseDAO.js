@@ -65,6 +65,21 @@ class ExpenseDAO {
             throw error;
         }
     }
+
+    static async pagarExpense(id) {
+        try {
+            const [updatedRows] = await Expense.update(
+                { paid: 1 }, { where: { id: id } }
+            );
+    
+            if (updatedRows === 0) return null;
+    
+            return await Expense.findByPk(id);
+        } catch (error) {
+            console.log('Error pagando el gasto: ', error);
+            throw error;
+        }
+    }
 }
 
 module.exports = ExpenseDAO;
