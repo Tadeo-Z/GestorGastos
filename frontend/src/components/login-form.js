@@ -10,6 +10,13 @@ export class LoginForm extends HTMLElement {
   connectedCallback() {
     this.render();
     this.attachEvents();
+    this.checkAuthStatus();
+  }
+
+  checkAuthStatus() {
+    if (this.#authService.estaAutenticado()) {
+      this.handleLoginSuccess();
+    }
   }
 
   render() {

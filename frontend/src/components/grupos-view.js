@@ -52,8 +52,8 @@ export class GruposView extends HTMLElement {
         try {
             const token = localStorage.getItem('authToken');
 
-            const res = await fetch('http://localhost:3000/api/grupos', {
-                headers: { Authorization: `Bearer ${token}`}
+            const res = await fetch('http://localhost:3000/api/groups', {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             const grupos = await res.json();

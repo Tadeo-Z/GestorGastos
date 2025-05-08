@@ -23,13 +23,14 @@ const getExpense = async(req, res) => {
 
 const addExpense = async(req, res) => {
     try {
-        const { amount, quoteDate, paid } = req.body;
+        const { name, amount, quoteDate, paid } = req.body;
 
-        if(!amount, !quoteDate, !paid) {
+        if(!name, !amount, !quoteDate, !paid) {
             throw new AppError('Faltan campos para llenar', 500);
         }
 
         const expense = {
+            name: name,
             amount: amount,
             quoteDate: quoteDate,
             paid: paid
@@ -45,13 +46,14 @@ const addExpense = async(req, res) => {
 const updateExpense = async(req, res) => {
     try {
         const { id } = req.params;
-        const { amount, quoteDate, paid } = req.body;
+        const { name, amount, quoteDate, paid } = req.body;
 
-        if(!amount, !quoteDate, !paid) {
+        if(!name, !amount, !quoteDate, !paid) {
             throw new AppError('Faltan campos para llenar', 500);
         }
 
         const expense = {
+            name: name,
             amount: amount,
             quoteDate: quoteDate,
             paid: paid

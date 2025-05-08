@@ -36,7 +36,7 @@ export class ContactosView extends HTMLElement {
     async loadContactos() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("/api/contactos", {
+        const res = await fetch("http://localhost:3000/api/users", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const contactos = await res.json();

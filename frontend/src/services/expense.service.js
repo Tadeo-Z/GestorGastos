@@ -1,6 +1,6 @@
 import { AuthService } from "./auth.service.js";
 
-export class ExepenseService {
+export class ExpenseService {
     #urlService = 'http://localhost:3000/api/expenses/';
     #authService = new AuthService();
 

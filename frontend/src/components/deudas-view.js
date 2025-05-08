@@ -1,3 +1,5 @@
+import { ExpenseService } from "../services/expense.service.js";
+
 export class DeudasView extends HTMLElement {
     connectedCallback() {
         this.render();
@@ -22,7 +24,7 @@ export class DeudasView extends HTMLElement {
     async loadDeudas() {
         try {
             const token = localStorage.getItem('authToken');
-            const response = await fetch('http://localhost:3000/api/deudas', {
+            const response = await fetch('http://localhost:3000/api/expenses', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -35,23 +37,30 @@ export class DeudasView extends HTMLElement {
     }
 
     renderDeudas(deudas) {
+        const formatoMoneda = (valor) => {
+            return new Intl.NumberFormat('es-419', {
+                style: 'decimal',
+                maximumFractionDigits: 2
+            }).format(valor);
+        };
+
         const container = this.querySelector('#deudasList');
         container.innerHTML = deudas.map(deuda => `
                 <div class="deuda-card">
                     <div class="deuda-info">
-                    <h3>${deuda.nombre}</h3>
-                    <p>Monto: $${deuda.monto}</p>
-                    <p>Fecha límite: ${deuda.fechaLimite}</p>
-                    <p>Estado: ${deuda.pagado ? "Pagado" : "Pendiente"}</p>
+                    <h3>${deuda.name}</h3>
+                    <p>Monto: $${formatoMoneda(deuda.amount)}</p>
+                    <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                    <p>Estado: ${deuda.paid == 1 ? "Pagado" : "Pendiente"}</p>
                     </div>
-                    ${!deuda.pagado ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${deuda.monto}</button>` : ""}
+                    ${!deuda.paid == 1 ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${formatoMoneda(deuda.amount)}</button>` : ""}
                 </div>
         `).join("");
 
         container.querySelectorAll(".pagar-btn").forEach(btn => {
             btn.addEventListener("click", async (e) => {
                 const id = e.target.dataset.id;
-                await this.pagarDeuda(id);
+                //await this.pagarDeuda(id);
             });
         });
     }
@@ -60,7 +69,7 @@ export class DeudasView extends HTMLElement {
         try {
             const token = localStorage.getItem('authToken');
 
-            const res = await fetch(`http://localhost:3000/api/deudas/${id}/pagar`, {
+            const res = await fetch(`http://localhost:3000/api/expenses`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -80,15 +89,23 @@ export class DeudasView extends HTMLElement {
     }
 
     updateProgress(deudas) {
-        const total = deudas.reduce((acc, deuda) => acc + deuda.monto, 0);
-        const pagado = deudas.filter(deuda => deuda.pagado).reduce((acc, deuda) => acc + deuda.monto, 0);
-        const porcentaje = total === 0 ? 0 : (pagado / total) * 100;
+        const total = deudas.reduce((acc, deuda) => acc + Number(deuda.amount), 0);
+        const pagado = deudas.filter(deuda => deuda.paid).reduce((acc, deuda) => acc + Number(deuda.amount), 0);
         
+        const porcentaje = total === 0 ? 0 : (pagado / total) * 100;
+    
         const barra = this.querySelector("#progresoPagado");
-        barra.computedStyleMap.width = `${porcentaje}%`;
-
+        barra.style.width = `${porcentaje}%`;
+    
+        const formatoMoneda = (valor) => {
+            return new Intl.NumberFormat('es-419', {
+                style: 'decimal',
+                maximumFractionDigits: 2
+            }).format(valor);
+        };
+    
         const texto = this.querySelector("#textoProgreso");
-        texto.textContent = `Total: $${pagado} pagado de $${total} (${porcentaje.toFixed(1)}%)`;
+        texto.textContent = `Total: $${formatoMoneda(pagado)} pagado de $${formatoMoneda(total)} (${porcentaje.toFixed(1)}%)`;
     }
 }
 
