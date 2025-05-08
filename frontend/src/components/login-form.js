@@ -37,8 +37,27 @@ export class LoginForm extends HTMLElement {
         const name = form.name.value;
         const password = form.password.value;
 
-        this.#authService.iniciarSesion(name, password);
+        try {
+          await this.#authService.iniciarSesion(name, password);
+          this.handleLoginSuccess();
+        } catch (error) {
+          alert(error.message);
+        }
     });
+  }
+
+  handleLoginSuccess() {
+    this.style.display = 'none';
+    
+    const appContent = document.getElementById('appContent');
+    if (appContent) {
+      appContent.style.display = 'block';
+    }
+
+    this.dispatchEvent(new CustomEvent('login-success', {
+      bubbles: true,
+      composed: true
+    }));
   }
 }
 
