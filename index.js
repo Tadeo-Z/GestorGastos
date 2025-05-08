@@ -1,5 +1,6 @@
 const express = require('express');
 const sequelize = require('./config/db');
+const cors = require('cors');
 const app = express();
 const { globalErrorHandler, AppError } = require('./util/AppError');
 const userRoutes = require('./routes/userRoute');
@@ -22,6 +23,7 @@ sequelize.sync({ force: true }).then(() => {
 // Middlewares
 app.use(express.json());
 app.use(morgan('combined'));
+app.use(cors());
 
 // Rutas organizadas
 app.use('/api/users', userRoutes);

@@ -1,5 +1,13 @@
+import { AuthService } from "../services/auth.service.js";
+
 export class LoginForm extends HTMLElement {
-  connectecCallback() {
+  #authService = new AuthService();
+
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
     this.render();
     this.attachEvents();
   }
@@ -9,8 +17,8 @@ export class LoginForm extends HTMLElement {
         <section class="login-container">
         <form id="loginForm">
           <h2>Iniciar Sesión</h2>
-          <label for="email">Correo electrónico</label>
-          <input type="email" id="email" name="email" required />
+          <label for="name">Usuario</label>
+          <input type="name" id="name" name="name" required />
 
           <label for="password">Contraseña</label>
           <input type="password" id="password" name="password" required />
@@ -18,8 +26,7 @@ export class LoginForm extends HTMLElement {
           <button type="submit">Ingresar</button>
           <p class="extra">¿Olvidaste tu contraseña?</p>
         </form>
-      </section>
-        `;
+      </section>`;
   }
 
   attachEvents() {
@@ -27,32 +34,10 @@ export class LoginForm extends HTMLElement {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = form.email.value;
+        const name = form.name.value;
         const password = form.password.value;
 
-        try {
-            const res = await fetch('http://localhost:3000/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-
-            if (!res.ok) throw new Error('Credenciales incorrectas');
-
-            const data = await res.json();
-            alert("Sesion iniciada correctamente");
-
-            // Guardar el token en el localStorage
-            localStorage.setItem('authToken', data.token);
-
-            this.dispatchEvent(new CustomEvent("login-success", {
-                bubbles: true,
-                composed: true,
-                detail: data
-            }));
-        } catch (err) {
-            alert(err.message);
-        }
+        this.#authService.iniciarSesion(name, password);
     });
   }
 }

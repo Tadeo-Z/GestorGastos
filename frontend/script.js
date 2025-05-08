@@ -1,4 +1,3 @@
-// import { LateralComponent } from "./lateral/lateral.js";
 import './src/components/login-form.js';
 import './src/components/home-screen.js';
 import './src/components/deudas-view.js';

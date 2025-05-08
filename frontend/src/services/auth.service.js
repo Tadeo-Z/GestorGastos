@@ -16,6 +16,7 @@ export class AuthService {
                 throw new Error(error.message || "Error al iniciar sesión");
             }
 
+            alert("Inicio de sesión exitoso");
             const data = await response.json();
 
             localStorage.setItem('authToken', data.token);
