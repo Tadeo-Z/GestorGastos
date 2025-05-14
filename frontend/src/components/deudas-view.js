@@ -1,6 +1,8 @@
 import { ExpenseService } from "../services/expense.service.js";
 
 export class DeudasView extends HTMLElement {
+    #expenseService = new ExpenseService();
+
     connectedCallback() {
         this.render();
         this.loadDeudas();
@@ -9,7 +11,10 @@ export class DeudasView extends HTMLElement {
     render() {
         this.innerHTML = `
             <section class="deudas-container">
-                <header><h1>Tus Deudas</h1></header>
+                <header>
+                    <h1>Tus Deudas</h1>
+                    <button >Agregar deuda</button>
+                </header>
                 <div id="deudasList" class="deuda-list"></div>
                 <footer class="barra-progreso">
                 <div class="barra">
@@ -23,12 +28,7 @@ export class DeudasView extends HTMLElement {
 
     async loadDeudas() {
         try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch('http://localhost:3000/api/expenses', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            const deudas = await response.json();
+            const deudas = await this.#expenseService.obtenerGastos();
             this.renderDeudas(deudas);
             this.updateProgress(deudas);
         } catch (error) {
@@ -67,17 +67,9 @@ export class DeudasView extends HTMLElement {
 
     async pagarDeuda(id) {
         try {
-            const token = localStorage.getItem('authToken');
+            const res = await this.#expenseService.pagarGasto(id);
 
-            const res = await fetch(`http://localhost:3000/api/expenses/${id}/pay`, {
-                method: 'PATCH',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (res.ok) {
+            if (res != null) {
                 alert("Deuda pagada correctamente.");
                 this.loadDeudas(); // Recargar
                 location.reload();

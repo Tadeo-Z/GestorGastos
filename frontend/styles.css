@@ -46,34 +46,6 @@ form {
 .auth-form.active {
   display: flex;
 }
-/**
-.auth-form label {
-  display: block;
-  margin: 10px 0 5px;
-}
-
-.auth-form input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.auth-form button {
-  width: 100%;
-  padding: 10px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.auth-form button:hover {
-  background: #45a049;
-}
-**/
 
 input, button {
     padding: 0.75em;
