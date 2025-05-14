@@ -1,8 +1,6 @@
-import { ExpenseService } from "../services/expense.service.js";
+import { ExpenseService } from "../services/expense.service.js"; 
 
 export class DeudasView extends HTMLElement {
-    #expenseService = new ExpenseService();
-
     connectedCallback() {
         this.render();
         this.loadDeudas();
@@ -11,24 +9,30 @@ export class DeudasView extends HTMLElement {
     render() {
         this.innerHTML = `
             <section class="deudas-container">
-                <header>
-                    <h1>Tus Deudas</h1>
-                    <button >Agregar deuda</button>
-                </header>
-                <div id="deudasList" class="deuda-list"></div>
-                <footer class="barra-progreso">
-                <div class="barra">
-                    <div id="progresoPagado" class="progreso-pagado"></div>
+                <header><h1>Tus Deudas</h1></header>
+                <div class="carousel-container">
+                    <button class="carousel-arrow left-arrow">&#10094;</button>
+                    <div id="deudasList" class="deuda-carousel"></div>
+                    <button class="carousel-arrow right-arrow">&#10095;</button>
                 </div>
-                <p id="textoProgreso"></p>
+                <footer class="barra-progreso">
+                    <div class="barra">
+                        <div id="progresoPagado" class="progreso-pagado"></div>
+                    </div>
+                    <p id="textoProgreso"></p>
                 </footer>
             </section>
-    `;
+        `;
     }
 
     async loadDeudas() {
         try {
-            const deudas = await this.#expenseService.obtenerGastos();
+            const token = localStorage.getItem('authToken');
+            const response = await fetch('http://localhost:3000/api/expenses', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const deudas = await response.json();
             this.renderDeudas(deudas);
             this.updateProgress(deudas);
         } catch (error) {
@@ -45,31 +49,68 @@ export class DeudasView extends HTMLElement {
         };
 
         const container = this.querySelector('#deudasList');
-        container.innerHTML = deudas.map(deuda => `
+        container.innerHTML = deudas.map(deuda => {
+            const daysRemaining = this.getDaysRemaining(deuda.quoteDate);
+
+            return `
                 <div class="deuda-card">
                     <div class="deuda-info">
-                    <h3>${deuda.name}</h3>
-                    <p>Monto: $${formatoMoneda(deuda.amount)}</p>
-                    <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                    <p>Estado: ${deuda.paid == 1 ? "Pagado" : "Pendiente"}</p>
+                        <h3>${deuda.name}</h3>
+                        <p>Monto: $${formatoMoneda(deuda.amount)}</p>
+                        <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                        <p>Días restantes: ${daysRemaining} días</p>
+                        <p>Estado: ${deuda.paid == 1 ? "Pagado" : "Pendiente"}</p>
                     </div>
                     ${!deuda.paid == 1 ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${formatoMoneda(deuda.amount)}</button>` : ""}
                 </div>
-        `).join("");
+            `;
+        }).join("");
 
+        // Add event listeners to buttons
         container.querySelectorAll(".pagar-btn").forEach(btn => {
             btn.addEventListener("click", async (e) => {
                 const id = e.target.dataset.id;
                 await this.pagarDeuda(id);
             });
         });
+
+        this.initCarousel();
+    }
+
+    getDaysRemaining(quoteDate) {
+        const currentDate = new Date();
+        const dueDate = new Date(quoteDate);
+        const timeDiff = dueDate - currentDate;
+        return Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
+    }
+
+    initCarousel() {
+        const leftArrow = this.querySelector('.left-arrow');
+        const rightArrow = this.querySelector('.right-arrow');
+        const carousel = this.querySelector('#deudasList');
+
+        leftArrow.addEventListener('click', () => {
+            carousel.scrollBy({ left: -carousel.clientWidth, behavior: 'smooth' });
+        });
+
+        rightArrow.addEventListener('click', () => {
+            carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' });
+        });
     }
 
     async pagarDeuda(id) {
         try {
-            const res = await this.#expenseService.pagarGasto(id);
+            const token = localStorage.getItem('authToken');
 
-            if (res != null) {
+            const res = await fetch(`http://localhost:3000/api/expenses/${id}/pay`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (res.ok) {
                 alert("Deuda pagada correctamente.");
                 this.loadDeudas(); // Recargar
                 location.reload();

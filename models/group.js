@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const UserGroup = require('./userGroup');
 
 const Group = sequelize.define('Group', {
     id: {
@@ -18,5 +19,8 @@ const Group = sequelize.define('Group', {
 }, {
     timestamps: false
 });
+
+// Relación muchos a muchos con usuarios
+Group.belongsToMany(require('./user'), { through: UserGroup, foreignKey: 'groupId' });
 
 module.exports = Group;

@@ -26,9 +26,9 @@ const getUser = async (req, res) => {
 
 const addUser = async (req, res, next) => {
     try {
-        const { name, paternalSurname, maternalSurname, entryDate, password } = req.body;
+        const { name, paternalSurname, maternalSurname, entryDate } = req.body;
 
-        if (!name || !paternalSurname || !maternalSurname || !entryDate || !password) {
+        if (!name || !paternalSurname || !maternalSurname || !entryDate) {
             return next(new AppError('Faltan campos obligatorios', 400));
         }
 
@@ -37,7 +37,6 @@ const addUser = async (req, res, next) => {
             paternalSurname,
             maternalSurname,
             entryDate,
-            password
         });
 
         res.status(201).json(user); // 201 Created
@@ -50,9 +49,9 @@ const addUser = async (req, res, next) => {
 const updateUser = async(req, res) => {
     try {
         const { id } = req.params;
-        const { name, paternalSurname, maternalSurname, entryDate, password} = req.body;
+        const { name, paternalSurname, maternalSurname, entryDate } = req.body;
 
-        if(!name || !paternalSurname || !maternalSurname, !entryDate, !password) {
+        if(!name || !paternalSurname || !maternalSurname, !entryDate) {
             throw new AppError('Faltan campos obligatorios', 500);
         }
 
@@ -60,8 +59,7 @@ const updateUser = async(req, res) => {
             name: name,
             paternalSurname: paternalSurname,
             maternalSurname: maternalSurname,
-            entryDate: entryDate,
-            password:  password
+            entryDate: entryDate
         }
 
         await UserDAO.updateUser(id, user);

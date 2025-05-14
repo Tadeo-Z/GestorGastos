@@ -1,6 +1,8 @@
 const { AppError } = require('../util/AppError');
 const GroupDAO = require('../dataAccess/groupDAO');
 const { now } = require('sequelize/lib/utils');
+const Group = require('../models/group');
+const UserGroup = require('../models/userGroup');
 
 const getGroups = async(req, res) => {
     try {
@@ -83,10 +85,30 @@ const deleteGroup = async(req, res) => {
     }
 }
 
+const getGroupsByUser = async (req, res, next) => {
+    try {
+        const userId = req.user.id; // ID del usuario autenticado
+
+        // Obtener los grupos relacionados con el usuario
+        const groups = await Group.findAll({
+            include: {
+                model: require('../models/user'),
+                through: { where: { userId } },
+                attributes: [] // No incluir datos del usuario
+            }
+        });
+
+        res.status(200).json(groups);
+    } catch (error) {
+        next(new AppError('No se pudieron obtener los grupos', 500));
+    }
+};
+
 module.exports = {
     getGroups,
     getGroup,
     addGroup,
     updateGroup,
-    deleteGroup
-}
+    deleteGroup,
+    getGroupsByUser
+};
