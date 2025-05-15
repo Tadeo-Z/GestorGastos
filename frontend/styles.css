@@ -301,8 +301,7 @@ dialog {
   scroll-behavior: smooth;
   
   width: 80vw;
-  overflow-x: hidden; /* Evita scroll manual */
-  pointer-events: none; /* Desactiva interacción manual */
+  overflow-x: hidden; /* Evita scroll manual */ 
 }
 
 .carousel-item {
@@ -334,8 +333,7 @@ dialog {
 /* Carrusel de deudas */
 #deudasList {
   display: flex;
-  overflow-x: hidden; /* Evita scroll manual */
-  pointer-events: none; /* Desactiva interacción manual */
+  overflow-x: hidden; /* Evita scroll manual */ 
   scroll-behavior: smooth;
   width: 80vw;
 }
@@ -346,8 +344,7 @@ dialog {
   scroll-behavior: smooth;
   gap: 1rem; /* Espacio entre tarjetas */
   width: 80vw;
-  padding: 0 1rem;
-  pointer-events: none; /* Desactiva scroll manual si quieres */
+  padding: 0 1rem; 
 }
 .deuda-info h3 {
   margin-top: 0;

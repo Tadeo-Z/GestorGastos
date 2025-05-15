@@ -3,25 +3,24 @@ export class HomeScreen extends HTMLElement {
         this.render();
         this.loadData(); // Lógica para cargar datos de la API
         this.setupReportButtons(); // Añadimos la configuración de botones para los reportes
+     this.addDeudasModalListeners();
     }
 
     render() {
         this.innerHTML = `
             <section class="home-container">
-                <header>
-                    <h1>Inicio</h1>
-                </header>
-
-                <section class="section-grid">
-                    <!-- Sección de Deudas -->
-                    <div class="section">
-                        <h2>Tus Deudas</h2>
-                        <div id="deudasCarousel" class="carousel-container">
-                            <button class="carousel-btn left" id="prevDeudas">&lt;</button>
-                            <div id="deudasList" class="carousel-content"></div>
-                            <button class="carousel-btn right" id="nextDeudas">&gt;</button>
-                        </div>
+            <header>
+                <h1>Inicio</h1>
+            </header>
+            <section class="section-grid">
+                <div class="section">
+                    <h2 id="abrirDeudasModal" style="cursor:pointer;">Tus Deudas</h2>
+                    <div id="deudasCarousel" class="carousel-container">
+                        <button class="carousel-btn left" id="prevDeudas">&lt;</button>
+                        <div id="deudasList" class="carousel-content"></div>
+                        <button class="carousel-btn right" id="nextDeudas">&gt;</button>
                     </div>
+                </div>
 
                     <!-- Sección de Grupos -->
                     <div class="section">
@@ -56,7 +55,17 @@ export class HomeScreen extends HTMLElement {
                 </section>
             </section>
             <div id="chartContainer" style="margin-top: 2rem;"></div>
-        `;
+        </section>
+            <dialog id="deudasModal">
+                <h2>Lista de Deudas</h2>
+                <ul id="listaDeudas"></ul>
+                <div id="detalleDeuda"></div>
+                <button id="cerrarDeudasModal">Cerrar</button>
+            </dialog>
+        </section>
+        <div id="chartContainer" style="margin-top: 2rem;"></div>
+   
+            `;
     }
 
 async loadData() {
@@ -104,6 +113,8 @@ async loadData() {
         const gruposDelUsuario = grupos.filter(grupo => userGroupIds.includes(grupo.id));
         console.log('gruposDelUsuario:', gruposDelUsuario);
 
+        this.deudas = deudas; // <--- AGREGA ESTA LÍNEA
+
         // Rellenar las listas con datos
         this.populateList("deudasList", deudas, "deuda");
         this.populateList("gruposList", gruposDelUsuario, "grupo");
@@ -137,15 +148,15 @@ populateList(id, items, tipo) {
         `).join("");
     } else if (tipo === 'deuda') {
         container.innerHTML = items.map(deuda => `
-            <div class="carousel-item">
-                <div class="deuda-card">
-                    <div class="deuda-info">
-                        <h3>${deuda.name}</h3>
-                        <p>Monto: $${this.formatMoney(deuda.amount)}</p>
-                        <p>Días restantes: ${this.calculateDaysRemaining(deuda.quoteDate)}</p>
-                    </div>
-                    ${deuda.paid ? "" : `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${this.formatMoney(deuda.amount)}</button>`}
+            <div class="deuda-card">
+                <div class="deuda-info">
+                    <h3>${deuda.name}</h3>
+                    <p>Monto: $${this.formatMoney(deuda.amount)}</p>
+                    <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                    <p>Días restantes: ${this.calculateDaysRemaining(deuda.quoteDate)} días</p>
+                    <p>Estado: ${deuda.paid ? "Pagado" : "Pendiente"}</p>
                 </div>
+                ${!deuda.paid ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${this.formatMoney(deuda.amount)}</button>` : ""}
             </div>
         `).join("");
     } else if (tipo === 'contacto') {
@@ -304,6 +315,50 @@ populateList(id, items, tipo) {
         console.log("Mostrando reporte de ahorros");
         // Aquí puedes cargar la gráfica de ahorros
     }
+    addDeudasModalListeners() {
+    const abrirBtn = this.querySelector("#abrirDeudasModal");
+    const modal = this.querySelector("#deudasModal");
+    const cerrarBtn = this.querySelector("#cerrarDeudasModal");
+    abrirBtn.addEventListener("click", () => {
+        window.location.href = "/frontend/deudas.html";
+    });
+    cerrarBtn.addEventListener("click", () => modal.close());
+}
+
+mostrarListaDeudas() {
+    const lista = this.querySelector("#listaDeudas");
+    // Suponiendo que this.deudas contiene las deudas del usuario
+    lista.innerHTML = this.deudas.map(deuda => `
+        <li style="cursor:pointer;" data-id="${deuda.id}">${deuda.titulo} - ${deuda.monto} (${deuda.vencimiento})</li>
+    `).join("");
+    lista.querySelectorAll("li").forEach(li => {
+        li.addEventListener("click", (e) => {
+            const id = e.target.dataset.id;
+            this.mostrarDetalleDeuda(id);
+        });
+    });
+}
+
+mostrarDetalleDeuda(id) {
+    const deuda = this.deudas.find(d => d.id == id);
+    const detalle = this.querySelector("#detalleDeuda");
+    if (!deuda) {
+        detalle.innerHTML = "<p>No se encontró la deuda.</p>";
+        return;
+    }
+    // Dummy: Integrantes y pagos
+    const integrantes = deuda.integrantes || [];
+    const pagados = integrantes.filter(i => i.pagado);
+    const faltan = integrantes.filter(i => !i.pagado);
+    detalle.innerHTML = `
+        <h3>${deuda.titulo}</h3>
+        <p>Vence: ${deuda.vencimiento}</p>
+        <p>Faltan: ${this.calculateDaysRemaining(deuda.vencimiento)} días</p>
+        ${deuda.grupo ? `<p>Grupo: ${deuda.grupo}</p>` : ""}
+        <p><strong>Pagaron:</strong> ${pagados.map(i => i.nombre).join(", ") || "Nadie"}</p>
+        <p><strong>Faltan:</strong> ${faltan.map(i => `${i.nombre} ($${i.faltaPagar})`).join(", ") || "Nadie"}</p>
+    `;
+}
 }
 
 customElements.define('home-screen', HomeScreen);
