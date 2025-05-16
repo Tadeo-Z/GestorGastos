@@ -20,6 +20,10 @@ class AppError extends Error {
 }
 
 const globalErrorHandler = (err, req, res, next) => {
+     // Asegura que los errores también incluyan los headers CORS
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     err.statusCode = err.statusCode || 500; // Establecer el código de estado por defecto
     err.status = err.status || 'error'; // Establecer el estado por defecto
 

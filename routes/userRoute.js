@@ -21,7 +21,7 @@ const validateUser = [
 
 router.get('/', auth, userController.getUsers);
 router.get('/:id', auth, userController.getUser);
-router.post('/', validateUser, userController.addUser); // Valida la entrada antes de crear el usuario
+router.post('/', validateUser, userController.registerUser); // Valida la entrada antes de crear el usuario
 router.put('/:id', auth, validateUser, userController.updateUser);
 router.delete('/:id', auth, userController.deleteUser);
 router.post('/login', validateUser, userController.loginUser); // Valida login

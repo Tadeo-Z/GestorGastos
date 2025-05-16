@@ -26,11 +26,17 @@ export class LoginForm extends HTMLElement {
     this.innerHTML = `
       <section class="login-container">
         <div class="auth-tabs">
-          <button class="tab ${this.#isLoginView ? 'active' : ''}" id="loginTab">Iniciar Sesión</button>
-          <button class="tab ${!this.#isLoginView ? 'active' : ''}" id="registerTab">Registrarse</button>
+          <button class="tab ${
+            this.#isLoginView ? "active" : ""
+          }" id="loginTab">Iniciar Sesión</button>
+          <button class="tab ${
+            !this.#isLoginView ? "active" : ""
+          }" id="registerTab">Registrarse</button>
         </div>
 
-        <form id="loginForm" class="auth-form ${this.#isLoginView ? 'active' : ''}">
+        <form id="loginForm" class="auth-form ${
+          this.#isLoginView ? "active" : ""
+        }">
           <h2>Iniciar Sesión</h2>
           <label for="name">Usuario</label>
           <input type="name" id="name" name="name" required />
@@ -38,11 +44,16 @@ export class LoginForm extends HTMLElement {
           <label for="password">Contraseña</label>
           <input type="password" id="password" name="password" required />
 
-          <button type="submit">Ingresar</button>
+          <button type="submit" id="loginBtn">
+          <span class="btn-text">Ingresar</span>
+          <span class="spinner hidden">Cargando...</span>
+          </button>
           <p class="extra">¿Olvidaste tu contraseña?</p>
         </form>
 
-        <form id="registerForm" class="auth-form ${!this.#isLoginView ? 'active' : ''}">
+        <form id="registerForm" class="auth-form ${
+          !this.#isLoginView ? "active" : ""
+        }">
           <h2>Registrarse</h2>
           <label for="registerName">Nombre</label>
           <input type="text" id="registerName" name="name" required />
@@ -59,80 +70,126 @@ export class LoginForm extends HTMLElement {
           <label for="registerConfirmPassword">Confirmar Contraseña</label>
           <input type="password" id="registerConfirmPassword" name="confirmPassword" required />
 
-          <button type="submit">Crear cuenta</button>
+          <button type="submit" id="registerBtn">
+          <span class="btn-text">Crear cuenta</span>
+          <span class="spinner hidden">Cargando...</span>
+          </button>
         </form>
+        <div class="messages"></div>
       </section>`;
   }
 
+  // Nuevo metodo para mostrar mensajes
+  showMessage(text, isError = false) {
+    const messagesDiv = this.querySelector(".messages");
+    messagesDiv.innerHTML = `<div class="message ${
+      isError ? "error" : "success"
+    }">${text}</div>`;
+    setTimeout(() => (messagesDiv.innerHTML = ""), 5000);
+  }
+
   attachEvents() {
-    this.querySelector('#loginTab').addEventListener('click', () => {
+    this.querySelector("#loginTab").addEventListener("click", () => {
       this.#isLoginView = true;
       this.render();
       this.attachEvents();
     });
 
-    this.querySelector('#registerTab').addEventListener('click', () => {
+    this.querySelector("#registerTab").addEventListener("click", () => {
       this.#isLoginView = false;
       this.render();
       this.attachEvents();
     });
 
-    const form = this.querySelector('#loginForm');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const name = form.name.value;
-        const password = form.password.value;
-
-        try {
-          await this.#authService.iniciarSesion(name, password);
-          this.handleLoginSuccess();
-        } catch (error) {
-          alert(error.message);
-        }
-    });
-
-    const registerForm = this.querySelector('#registerForm');
-    registerForm.addEventListener('submit', async (e) => {
+    const loginForm = this.querySelector("#loginForm");
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      const name = registerForm.registerName.value;
-      const paternalSurname = registerForm.registerPaternalSurname.value;
-      const maternalSurname = registerForm.registerMaternalSurname.value;
-      const password = registerForm.registerPassword.value;
-      const confirmPassword = registerForm.registerConfirmPassword.value;
-
-      if (password !== confirmPassword) {
-        alert('Las contraseñas no coinciden');
-        return;
-      }
+      const btn = this.querySelector("#loginBtn");
+      this.toggleLoading(btn, true);
 
       try {
-        await this.#userService.agregarUsuario(name, paternalSurname, maternalSurname, new Date(), password);
-        alert('Registro exitoso. Por favor inicia sesión.');
+        const name = loginForm.name.value.trim();
+        const password = loginForm.password.value;
+
+        if (password.length < 6) {
+          throw new Error("La contraseña debe tener al menos 6 caracteres");
+        }
+
+        await this.#authService.iniciarSesion(name, password);
+        this.handleLoginSuccess();
+      } catch (error) {
+        this.showMessage(error.message, true);
+      } finally {
+        this.toggleLoading(btn, false);
+      }
+    });
+
+    const registerForm = this.querySelector("#registerForm");
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = this.querySelector("#registerBtn");
+      this.toggleLoading(btn, true);
+
+      try {
+        const name = registerForm.registerName.value.trim();
+        const paternalSurname =
+          registerForm.registerPaternalSurname.value.trim();
+        const maternalSurname =
+          registerForm.registerMaternalSurname.value.trim();
+        const password = registerForm.registerPassword.value;
+        const confirmPassword = registerForm.registerConfirmPassword.value;
+
+        // Validaciones adicionales
+        if (password < 6) {
+          throw new Error("La contraseña debe tener al menos 6 caracteres");
+        }
+
+        if (password !== confirmPassword) {
+          throw new Error("Las contraseñas no coinciden");
+        }
+
+        await this.#authService.registrarUsuario({
+          name,
+          paternalSurname,
+          maternalSurname,
+          password,
+        });
+
+        this.showMessage("Registro exitoso. Por favor inicia sesión.");
         this.#isLoginView = true;
         this.render();
         this.attachEvents();
       } catch (error) {
-        alert(`${error.message}, pw: ${password}`);
+        this.showMessage(error.message, true);
+      } finally {
+        this.toggleLoading(btn, false);
       }
     });
-
   }
 
   handleLoginSuccess() {
-    this.style.display = 'none';
-    
-    const appContent = document.getElementById('appContent');
-    if (appContent) {
-      appContent.style.display = 'block';
-    }
+    this.dispatchEvent(
+      new CustomEvent("login-success", {
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
 
-    this.dispatchEvent(new CustomEvent('login-success', {
-      bubbles: true,
-      composed: true
-    }));
+  toggleLoading(button, isLoading) {
+    const spinner = button.querySelector(".spinner");
+    const text = button.querySelector(".btn-text");
+
+    if (isLoading) {
+      spinner.classList.remove("hidden");
+      text.classList.add("hidden");
+      button.disabled = true;
+    } else {
+      spinner.classList.add("hidden");
+      text.classList.remove("hidden");
+      button.disabled = false;
+    }
   }
 }
 
-customElements.define('login-form', LoginForm);
+customElements.define("login-form", LoginForm);

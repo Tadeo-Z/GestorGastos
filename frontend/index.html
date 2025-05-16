@@ -1,27 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestor Gastos</title>
-    <link rel="stylesheet" href="./styles.css">
-    <script type="module" src="./script.js"></script>
-</head>
-<body>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
     <header>
-        <h1>Bienvenido a tu app financiera</h1>
+      <h1>Bienvenido a tu app financiera</h1>
     </header>
 
-    <main>
-        <login-form></login-form>
-        <div id="appContent" style="display: none;">
-            <home-screen></home-screen>
-            <deudas-view></deudas-view>
-            <!--
-            <grupos-view></grupos-view>
-            <groupo-chat-view grupo-id=""></groupo-chat-view>
-            <contactos-view></contactos-view> -->
-        </div>
+    <main id="mainContainer">
+      <!-- Ahora la carga de los componentes es dinamica (Creo)-->
     </main>
-</body>
+
+    <script type="module" src="./src/components/login-form.js"></script>
+    <script type="module" src="./script.js"></script>
+    
+  </body>
 </html>

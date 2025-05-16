@@ -14,16 +14,22 @@ const morgan = require('morgan');
 require('dotenv').config({ path: '.config.env' });
 
 // Sincronización de la base de datos
-sequelize.sync({ force: true }).then(() => {
-    console.log('Tablas creadas');
+sequelize.sync({ alter: true }).then(() => {
+    console.log('Base de datos conectada');
 }).catch(error => {
-    console.error('Error sincronizando el modelo con la base de datos', error);
+    console.error('Error de conexion a la BD: ', error);
 });
 
 // Middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
-app.use(cors());
+app.use(cors({
+    origin: '*', // Live server
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Rutas organizadas
 app.use('/api/users', userRoutes);
@@ -47,7 +53,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`El servidor está escuchando en el puerto ${PORT}`);
 });
-sequelize.sync({ force: true }).then(() => {
+sequelize.sync({ alter: true }).then(() => {
     console.log('Tablas creadas');
 }).catch(error => {
     console.error('Error sincronizando el modelo con la base de datos', error);

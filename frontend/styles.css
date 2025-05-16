@@ -567,3 +567,48 @@ header h1 {
 
 .left-arrow { left: 5px; }
 .right-arrow { right: 5px; }
+
+/* Mensajes */
+.messages {
+  margin: 1rem 0;
+  min-height: 3rem;
+}
+
+.message {
+  padding: 0.8rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.message.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid rgba(0,0,0,.1);
+  border-radius: 50%;
+  border-top-color: #333;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.spinner.hidden {
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn-text.hidden {
+  display: none;
+}
