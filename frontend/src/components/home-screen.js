@@ -4,11 +4,24 @@ export class HomeScreen extends HTMLElement {
         this.loadData(); // Lógica para cargar datos de la API
         this.setupReportButtons(); // Añadimos la configuración de botones para los reportes
      this.addDeudasModalListeners();
+     this.addDeudasModalListeners();
     }
 
     render() {
         this.innerHTML = `
             <section class="home-container">
+            <header>
+                <h1>Inicio</h1>
+            </header>
+            <section class="section-grid">
+                <div class="section">
+                    <h2 id="abrirDeudasModal" style="cursor:pointer;">Tus Deudas</h2>
+                    <div id="deudasCarousel" class="carousel-container">
+                        <button class="carousel-btn left" id="prevDeudas">&lt;</button>
+                        <div id="deudasList" class="carousel-content"></div>
+                        <button class="carousel-btn right" id="nextDeudas">&gt;</button>
+                    </div>
+                </div>
             <header>
                 <h1>Inicio</h1>
             </header>
@@ -40,6 +53,16 @@ export class HomeScreen extends HTMLElement {
               </section>
             </section>
             <div id="chartContainer" style="margin-top: 2rem;"></div>
+        </section>
+            <dialog id="deudasModal">
+                <h2>Lista de Deudas</h2>
+                <ul id="listaDeudas"></ul>
+                <div id="detalleDeuda"></div>
+                <button id="cerrarDeudasModal">Cerrar</button>
+            </dialog>
+        </section>
+        <div id="chartContainer" style="margin-top: 2rem;"></div>
+
         </section>
             <dialog id="deudasModal">
                 <h2>Lista de Deudas</h2>
@@ -100,6 +123,8 @@ async loadData() {
 
         this.deudas = deudas; // <--- AGREGA ESTA LÍNEA
 
+        this.deudas = deudas; // <--- AGREGA ESTA LÍNEA
+
         // Rellenar las listas con datos
         this.populateList("deudasList", deudas, "deuda");
         this.populateList("gruposList", gruposDelUsuario, "grupo");
@@ -140,7 +165,15 @@ populateList(id, items, tipo) {
                     <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                     <p>Días restantes: ${this.calculateDaysRemaining(deuda.quoteDate)} días</p>
                     <p>Estado: ${deuda.paid ? "Pagado" : "Pendiente"}</p>
+            <div class="deuda-card">
+                <div class="deuda-info">
+                    <h3>${deuda.name}</h3>
+                    <p>Monto: $${this.formatMoney(deuda.amount)}</p>
+                    <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                    <p>Días restantes: ${this.calculateDaysRemaining(deuda.quoteDate)} días</p>
+                    <p>Estado: ${deuda.paid ? "Pagado" : "Pendiente"}</p>
                 </div>
+                ${!deuda.paid ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${this.formatMoney(deuda.amount)}</button>` : ""}
                 ${!deuda.paid ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${this.formatMoney(deuda.amount)}</button>` : ""}
             </div>
         `).join("");
@@ -231,6 +264,132 @@ populateList(id, items, tipo) {
                 <p>${item.name}</p>
             </div>
         `).join("");
+    }
+    addDeudasModalListeners() {
+    const abrirBtn = this.querySelector("#abrirDeudasModal");
+    const modal = this.querySelector("#deudasModal");
+    const cerrarBtn = this.querySelector("#cerrarDeudasModal");
+    abrirBtn.addEventListener("click", () => {
+        window.location.href = "/frontend/deudas.html";
+    });
+    cerrarBtn.addEventListener("click", () => modal.close());
+}
+
+mostrarListaDeudas() {
+    const lista = this.querySelector("#listaDeudas");
+    // Suponiendo que this.deudas contiene las deudas del usuario
+    lista.innerHTML = this.deudas.map(deuda => `
+        <li style="cursor:pointer;" data-id="${deuda.id}">${deuda.titulo} - ${deuda.monto} (${deuda.vencimiento})</li>
+    `).join("");
+    lista.querySelectorAll("li").forEach(li => {
+        li.addEventListener("click", (e) => {
+            const id = e.target.dataset.id;
+            this.mostrarDetalleDeuda(id);
+        });
+    });
+}
+
+mostrarDetalleDeuda(id) {
+    const deuda = this.deudas.find(d => d.id == id);
+    const detalle = this.querySelector("#detalleDeuda");
+    if (!deuda) {
+        detalle.innerHTML = "<p>No se encontró la deuda.</p>";
+        return;
+    }
+    // Dummy: Integrantes y pagos
+    const integrantes = deuda.integrantes || [];
+    const pagados = integrantes.filter(i => i.pagado);
+    const faltan = integrantes.filter(i => !i.pagado);
+    detalle.innerHTML = `
+        <h3>${deuda.titulo}</h3>
+        <p>Vence: ${deuda.vencimiento}</p>
+        <p>Faltan: ${this.calculateDaysRemaining(deuda.vencimiento)} días</p>
+        ${deuda.grupo ? `<p>Grupo: ${deuda.grupo}</p>` : ""}
+        <p><strong>Pagaron:</strong> ${pagados.map(i => i.nombre).join(", ") || "Nadie"}</p>
+        <p><strong>Faltan:</strong> ${faltan.map(i => `${i.nombre} ($${i.faltaPagar})`).join(", ") || "Nadie"}</p>
+    `;
+}
+    initializeCarousel() {
+        const carousels = [
+            { prevBtnId: "prevDeudas", nextBtnId: "nextDeudas", listId: "deudasList" },
+            { prevBtnId: "prevGrupos", nextBtnId: "nextGrupos", listId: "gruposList" },
+            { prevBtnId: "prevContactos", nextBtnId: "nextContactos", listId: "contactosList" },
+        ];
+
+        carousels.forEach(carousel => {
+            const prevBtn = this.querySelector(`#${carousel.prevBtnId}`);
+            const nextBtn = this.querySelector(`#${carousel.nextBtnId}`);
+            const carouselContent = this.querySelector(`#${carousel.listId}`);
+
+            let scrollValue = 0;
+            const itemWidth = carouselContent.querySelector(".carousel-item")?.offsetWidth || 200; // Asume un tamaño razonable por defecto
+
+            const maxScroll = carouselContent.scrollWidth - carouselContent.clientWidth;
+
+            nextBtn.addEventListener("click", () => {
+                if (scrollValue < maxScroll) {
+                    scrollValue += itemWidth;
+                    carouselContent.scrollTo({ left: scrollValue, behavior: 'smooth' });
+                }
+            });
+
+            prevBtn.addEventListener("click", () => {
+                if (scrollValue > 0) {
+                    scrollValue -= itemWidth;
+                    carouselContent.scrollTo({ left: scrollValue, behavior: 'smooth' });
+                }
+            });
+        });
+    }
+
+    setupReportButtons() {
+        const gastosDiariosBtn = this.querySelector("#gastosDiarios");
+        const gastosSemanalesBtn = this.querySelector("#gastosSemanales");
+        const gastosMensualesBtn = this.querySelector("#gastosMensuales");
+        const ahorrosBtn = this.querySelector("#ahorros");
+
+        gastosDiariosBtn.addEventListener("click", () => this.showGastosReport('diarios'));
+        gastosSemanalesBtn.addEventListener("click", () => this.showGastosReport('semanales'));
+        gastosMensualesBtn.addEventListener("click", () => this.showGastosReport('mensuales'));
+        ahorrosBtn.addEventListener("click", () => this.showAhorrosReport());
+    }
+
+    showGastosReport(periodo) {
+        console.log(`Mostrando reporte de gastos ${periodo}`);
+        const canvas = document.createElement("canvas");
+        const container = this.querySelector("#chartContainer");
+        container.innerHTML = ""; // Limpiar anteriores
+        container.appendChild(canvas);
+
+        const ctx = canvas.getContext("2d");
+        new Chart(ctx, {
+            type: 'bar', // Tipo de gráfico
+
+        data: {
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril'],
+            datasets: [{
+                label: `Gastos ${periodo}`,
+                data: [100, 200, 150, 300], // Datos de ejemplo
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+
+    showAhorrosReport() {
+        console.log("Mostrando reporte de ahorros");
+        // Aquí puedes cargar la gráfica de ahorros
     }
     addDeudasModalListeners() {
     const abrirBtn = this.querySelector("#abrirDeudasModal");
