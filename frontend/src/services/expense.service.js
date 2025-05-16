@@ -2,6 +2,7 @@ import { AuthService } from "./auth.service.js";
 
 export class ExpenseService {
     #urlService = 'http://localhost:3000/api/expenses/';
+    #urlPayService = '/pay'
     #authService = new AuthService();
 
     async obtenerGastos() {
@@ -101,6 +102,25 @@ export class ExpenseService {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`
+            }
+        });
+
+        if(!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        let json = await response.json();
+        return json;
+    }
+
+    async pagarGasto(expenseId) {
+        const token = this.#authService.obtenerToken();
+
+        let response = await fetch(this.#urlService + expenseId + this.#urlPayService, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
         });
 

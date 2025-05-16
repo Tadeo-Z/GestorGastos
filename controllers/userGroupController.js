@@ -1,22 +1,14 @@
 const { AppError } = require('../util/AppError');
 const UserGroupDAO = require('../dataAccess/userGroupDAO');
-const UserGroup = require('../models/userGroup');
 
-const getUserGroups = async (req, res, next) => {
+const getUserGroups = async(req, res) => {
     try {
-        const userId = req.user.id; // ID del usuario autenticado
-
-        // Filtrar los registros de UserGroups por userId
-        const userGroups = await UserGroup.findAll({
-            where: { userId } // Filtra por userId, no por groupId
-        });
-
-        res.status(200).json(userGroups);
+        const userGroups = await UserGroupDAO.getAllUserGroups();
+        res.json(userGroups.map(userGroup => userGroup.toJSON()));
     } catch (error) {
-        console.error("Error al obtener los grupos del usuario:", error);
-        res.status(500).json({ message: "Error al obtener los grupos del usuario" });
+        throw new AppError('No se pudieron obtener los grupos con usuarios', 500);
     }
-};
+}
 
 const getUserGroup = async(req, res) => {
     try {
@@ -116,4 +108,4 @@ module.exports = {
     addUserGroup,
     updateUserGroup,
     deleteUserGroup
-};
+}

@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const userGroupController = require('../controllers/userGroupController');
-const { auth } = require('../util/auth'); // Middleware de autenticación
+const auth = require('../util/auth');
 
-// Ruta para obtener los grupos del usuario autenticado
-router.get('/', auth, userGroupController.getUserGroups);
+router.get('/', userGroupController.getUserGroups);
 router.get('/:id', userGroupController.getUserGroup);
 router.get('/user/:id', userGroupController.getUserGroupUser);
 router.get('/group/:id', userGroupController.getUserGroupGroup);
