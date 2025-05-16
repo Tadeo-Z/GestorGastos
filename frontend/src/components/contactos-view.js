@@ -35,14 +35,9 @@ export class ContactosView extends HTMLElement {
   
     async loadContactos() {
       try {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-          alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
-          window.location.href = '/login'; // Redirige al usuario a la página de inicio de sesión
-          return;
-        }
-        const res = await fetch("http://localhost:3000/api/contactos", {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3000/api/users", {
+          headers: { Authorization: `Bearer ${token}` }
         });
         const contactos = await res.json();
         this.renderContactos(contactos);
@@ -55,11 +50,11 @@ export class ContactosView extends HTMLElement {
       const container = this.querySelector("#listaContactos");
       container.innerHTML = contactos.map(c => `
         <div class="contacto-card">
-          <span>${c.name || c.nombre || "Sin nombre"}</span> <!-- Verifica las propiedades disponibles -->
+          <span>${c.nombre}</span>
           <button class="eliminar-btn" data-id="${c.id}">Eliminar</button>
         </div>
       `).join("");
-    
+  
       container.querySelectorAll(".eliminar-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
           const id = btn.dataset.id;
@@ -70,12 +65,7 @@ export class ContactosView extends HTMLElement {
   
     async buscarUsuario(nombre) {
       try {
-        const token = localStorage.getItem("authToken");
-        if (!token) {
-          alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
-          window.location.href = '/login'; // Redirige al usuario a la página de inicio de sesión
-          return;
-        }
+        const token = localStorage.getItem("token");
         const res = await fetch(`/api/usuarios/buscar?nombre=${encodeURIComponent(nombre)}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -114,12 +104,7 @@ export class ContactosView extends HTMLElement {
   
     async agregarContacto(id) {
       try {
-        const token = localStorage.getItem("authToken");
-        if (!token) {
-          alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
-          window.location.href = '/login'; // Redirige al usuario a la página de inicio de sesión
-          return;
-        }
+        const token = localStorage.getItem("token");
         const res = await fetch("/api/contactos", {
           method: "POST",
           headers: {
@@ -142,12 +127,7 @@ export class ContactosView extends HTMLElement {
   
     async eliminarContacto(id) {
       try {
-        const token = localStorage.getItem("authToken");
-        if (!token) {
-          alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
-          window.location.href = '/login'; // Redirige al usuario a la página de inicio de sesión
-          return;
-        }
+        const token = localStorage.getItem("token");
         const res = await fetch(`/api/contactos/${id}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` }
