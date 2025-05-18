@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         mainContainer.innerHTML = `
             <home-screen></home-screen>
             <deudas-view></deudas-view>
+            <grupos-view></grupos-view>
         `;
     } else {
         mainContainer.innerHTML = '<login-form></login-form>';

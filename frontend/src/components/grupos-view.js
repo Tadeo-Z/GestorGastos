@@ -1,4 +1,8 @@
+import { GroupService } from "../services/group.service.js";
+
 export class GruposView extends HTMLElement {
+    #groupService = new GroupService();
+
     connectedCallback() {
         this.render();
         this.loadGrupos();
@@ -35,28 +39,22 @@ export class GruposView extends HTMLElement {
         });
 
         this.querySelector("#cancelarCrear").addEventListener("click", () => {
-            dialog.closest();
+            dialog.close();
         });
 
         this.querySelector("#formCrearGrupo").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const nombre = this.querySelector("#nombreGrupo").ariaValueMax.trim();
-            if (nombre) {
-                await this.crearGrupo(nombre);
-                dialog.closest();
+            const description = this.querySelector("#nombreGrupo").value.trim();
+            if (description) {
+                await this.crearGrupo(description);
+                dialog.close();
             }
         });
     }
 
     async loadGrupos() {
         try {
-            const token = localStorage.getItem('authToken');
-
-            const res = await fetch('http://localhost:3000/api/groups', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            const grupos = await res.json();
+            const grupos = await this.#groupService.obtenerGrupos();
             this.renderGrupos(grupos);
         } catch (err) {
             console.error("Error al cargar grupos: ", err);
@@ -68,7 +66,7 @@ export class GruposView extends HTMLElement {
         container.innerHTML = grupos.map(grupo => `
                 <div class="grupo-card">
                     <div>
-                    <h3>${grupo.nombre}</h3>
+                    <h3>${grupo.description}</h3>
                     <p>Miembros: ${grupo.miembros?.length || 0}</p>
                     </div>
                     <div class="acciones">
@@ -93,20 +91,11 @@ export class GruposView extends HTMLElement {
         });
     }
 
-    async crearGrupo(nombre) {
+    async crearGrupo(description) {
         try {
-            const token = localStorage.getItem('authToken');
+            const group = await this.#groupService.agregarGrupo(description);
 
-            const res = await fetch('http://localhost:3000/api/grupos', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ nombre })
-            });
-
-            if (res.ok) {
+            if (group) {
                 alert("Grupo creado correctamente.");
                 this.loadGrupos();
             } else {

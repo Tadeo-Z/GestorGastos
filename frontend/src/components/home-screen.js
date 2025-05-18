@@ -30,35 +30,32 @@ export class HomeScreen extends HTMLElement {
                   <h2>Tus Contactos</h2>
                   <div id="contactosList" class="item-list"></div>
                 </div>
-
-                <!--
+                
                 <div class="section">
                   <h2>Reportes</h2>
                   <div id="reportesList" class="item-list"></div>
-                </div>*/ -->
+                </div>
               </section>
             </section>
             <div id="chartContainer" style="margin-top: 2rem;"></div>
-        </section>
-            <dialog id="deudasModal">
-                <h2>Lista de Deudas</h2>
-                <ul id="listaDeudas"></ul>
-                <div id="detalleDeuda"></div>
-                <button id="cerrarDeudasModal">Cerrar</button>
-            </dialog>
-        </section>
-        <div id="chartContainer" style="margin-top: 2rem;"></div>
-
-        </section>
-            <dialog id="deudasModal">
-                <h2>Lista de Deudas</h2>
-                <ul id="listaDeudas"></ul>
-                <div id="detalleDeuda"></div>
-                <button id="cerrarDeudasModal">Cerrar</button>
-            </dialog>
-        </section>
-        <div id="chartContainer" style="margin-top: 2rem;"></div>
-   
+            <section>
+                <dialog id="deudasModal">
+                    <h2>Lista de Deudas</h2>
+                    <ul id="listaDeudas"></ul>
+                    <div id="detalleDeuda"></div>
+                    <button id="cerrarDeudasModal">Cerrar</button>
+                </dialog>
+            </section>
+            <div id="chartContainer" style="margin-top: 2rem;"></div>
+            <section>
+                <dialog id="deudasModal">
+                    <h2>Lista de Deudas</h2>
+                    <ul id="listaDeudas"></ul>
+                    <div id="detalleDeuda"></div>
+                    <button id="cerrarDeudasModal">Cerrar</button>
+                </dialog>
+            </section>
+            <div id="chartContainer" style="margin-top: 2rem;"></div>
             `;
     }
 

@@ -38,12 +38,12 @@ export class GroupService {
         return json;
     }
 
-    async agregarGrupo(name, description) {
+    async agregarGrupo(description) {
         const token = this.#authService.obtenerToken();
 
         const nuevoGrupo = {
-            name,
-            description
+            description,
+            creationDate: new Date()
         };
 
         let response = await fetch(this.#urlService, {
