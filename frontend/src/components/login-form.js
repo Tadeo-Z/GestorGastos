@@ -1,9 +1,9 @@
 import { AuthService } from "../services/auth.service.js";
-import { UserService } from "../services/user.service.js";
+import { CountService } from "../services/count.service.js";
 
 export class LoginForm extends HTMLElement {
   #authService = new AuthService();
-  #userService = new UserService();
+  #countService = new CountService();
   #isLoginView = true;
 
   constructor() {
@@ -154,6 +154,9 @@ export class LoginForm extends HTMLElement {
           maternalSurname,
           password,
         });
+
+        const count = await this.#countService.agregarCuenta(0, new Date(), null);
+        localStorage.setItem('countId', count.id);
 
         this.showMessage("Registro exitoso. Por favor inicia sesión.");
         this.#isLoginView = true;

@@ -23,7 +23,7 @@ const getExpense = async(req, res) => {
 
 const addExpense = async(req, res) => {
     try {
-        const { name, amount, quoteDate, paid, userId } = req.body;
+        const { name, amount, quoteDate, paid, userId, countId } = req.body;
 
         if(!name || !amount || !quoteDate || paid === undefined || !userId) {
             throw new AppError('Faltan campos para llenar', 500);
@@ -34,10 +34,11 @@ const addExpense = async(req, res) => {
             amount: amount,
             quoteDate: quoteDate,
             paid: paid,
-            userId
+            userId,
+            countId
         }
 
-        await ExpenseDAO.createExpense(userId, 1, expense);
+        await ExpenseDAO.createExpense(userId, countId, expense);
         res.json(expense);
     } catch (error) {
         throw new AppError('No se pudo agregar el gasto' + error.message, 500);

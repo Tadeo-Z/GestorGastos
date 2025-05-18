@@ -119,7 +119,7 @@ export class DeudasView extends HTMLElement {
             const amount = parseFloat(this.querySelector('#deudaMonto').value);
             const quoteDate = this.querySelector('#deudaFecha').value;
 
-            const result = await this.#expenseService.agregarGasto(name, amount, quoteDate, 0, localStorage.getItem("userId"));
+            const result = await this.#expenseService.agregarGasto(name, amount, quoteDate, 0, localStorage.getItem("userId"), localStorage.getItem("countId"));
 
             if(result) {
                 alert('Deuda agregada correctamente');

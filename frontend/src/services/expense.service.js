@@ -39,7 +39,7 @@ export class ExpenseService {
         return json;
     }
 
-    async agregarGasto(name, amount, quoteDate, paid, userId) {
+    async agregarGasto(name, amount, quoteDate, paid, userId, countId) {
         const token = this.#authService.obtenerToken();
 
         const nuevoGasto = {
@@ -47,7 +47,8 @@ export class ExpenseService {
             amount,
             quoteDate,
             paid,
-            userId
+            userId,
+            countId
         };
 
         let response = await fetch(this.#urlService, {
