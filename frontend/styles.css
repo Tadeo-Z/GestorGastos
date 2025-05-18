@@ -471,21 +471,6 @@ header h1 {
   color: white;
 }
 
-/* Progreso de pagos */
-.barra {
-  background: #333;
-  height: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progreso-pagado {
-  background: var(--color-success);
-  height: 100%;
-  width: 0%;
-  transition: width 0.4s ease-in-out;
-}
-
 /* Carrusel */
 .carousel-container {
   display: flex;
