@@ -15,7 +15,7 @@ export class DeudasView extends HTMLElement {
             <section class="deudas-container">
                 <header>
                     <h1>Tus Deudas</h1>
-                    <button id="add-expense" >Agregar deuda</button>
+                    <button id="add-expense" class="pagar-btn">Agregar deuda</button>
                 </header>
                 <div id="deudasList" class="deuda-list"></div>
                 <footer class="barra-progreso">
@@ -67,12 +67,14 @@ export class DeudasView extends HTMLElement {
         this.querySelector('#add-expense').addEventListener('click', () => {
             this.#isFormVisible = true;
             this.render();
+            this.loadDeudas();
             this.attachEvents();
         });
 
         this.querySelector('.close-modal')?.addEventListener('click', () => {
             this.#isFormVisible = false;
             this.render();
+            this.loadDeudas();
             this.attachEvents();
         });
 
