@@ -66,16 +66,16 @@ export class HomeScreen extends HTMLElement {
                 throw new Error("Token no encontrado. Por favor, inicia sesión nuevamente.");
             }
 
-            const [deudas /*grupos, userGroups, contactos*/] = await Promise.all([
+            const [deudas, grupos, userGroups /*, contactos*/] = await Promise.all([
                 fetch('http://localhost:3000/api/expenses', {
                     headers: { 'Authorization': `Bearer ${token}` }
-                })/*.then(res => res.json()),
+                }).then(res => res.json()),
             fetch('http://localhost:3000/api/groups', {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.json()),
             fetch('http://localhost:3000/api/userGroups', {
                 headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => res.json()),
+            })/*.then(res => res.json()),
             fetch('http://localhost:3000/api/contactos', {
                 headers: { 'Authorization': `Bearer ${token}` }
             })*/.then(res => {
@@ -87,9 +87,9 @@ export class HomeScreen extends HTMLElement {
             ]);
 
             console.log('Deudas:', deudas);
-            /*
             console.log('Grupos:', grupos);
             console.log('UserGroups:', userGroups);
+            /*
             console.log('Contactos:', contactos);*/
 
             const decodedToken = JSON.parse(atob(token.split('.')[1]));
@@ -97,13 +97,13 @@ export class HomeScreen extends HTMLElement {
             console.log('User ID:', userId); // Verificar que el ID del usuario sea correcto
 
             // Filtrar grupos del usuario
-            /*const userGroupIds = userGroups
+            const userGroupIds = userGroups
                 .filter(ug => ug.userId === localStorage.getItem("userId"))
                 .map(ug => ug.groupId);
             console.log('userGroupIds:', userGroupIds);
     
             const gruposDelUsuario = grupos.filter(grupo => userGroupIds.includes(grupo.id));
-            console.log('gruposDelUsuario:', gruposDelUsuario);*/
+            console.log('gruposDelUsuario:', gruposDelUsuario);
 
             this.deudas = deudas; // <--- AGREGA ESTA LÍNEA
 
@@ -111,8 +111,8 @@ export class HomeScreen extends HTMLElement {
 
             // Rellenar las listas con datos
             this.populateList("deudasList", deudas, "deuda");
-            /*
             this.populateList("gruposList", gruposDelUsuario, "grupo");
+            /*
             this.populateList("contactosList", contactos, "contacto");*/
 
             this.initializeCarousel();
