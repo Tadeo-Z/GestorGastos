@@ -152,15 +152,7 @@ export class HomeScreen extends HTMLElement {
                     <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                     <p>Días restantes: ${this.calculateDaysRemaining(deuda.quoteDate)} días</p>
                     <p>Estado: ${deuda.paid ? "Pagado" : "Pendiente"}</p>
-            <div class="deuda-card">
-                <div class="deuda-info">
-                    <h3>${deuda.name}</h3>
-                    <p>Monto: $${this.formatMoney(deuda.amount)}</p>
-                    <p>Fecha límite: ${new Date(deuda.quoteDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                    <p>Días restantes: ${this.calculateDaysRemaining(deuda.quoteDate)} días</p>
-                    <p>Estado: ${deuda.paid ? "Pagado" : "Pendiente"}</p>
                 </div>
-                ${!deuda.paid ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${this.formatMoney(deuda.amount)}</button>` : ""}
                 ${!deuda.paid ? `<button class="pagar-btn" data-id="${deuda.id}">Pagar - $${this.formatMoney(deuda.amount)}</button>` : ""}
             </div>
         `).join("");
@@ -315,14 +307,14 @@ export class HomeScreen extends HTMLElement {
 
             nextBtn.addEventListener("click", () => {
                 if (scrollValue < maxScroll) {
-                    scrollValue += 300;
+                    scrollValue += 500;
                     carouselContent.scrollTo({ left: scrollValue, behavior: 'smooth' });
                 }
             });
 
             prevBtn.addEventListener("click", () => {
                 if (scrollValue > 0) {
-                    scrollValue -= 300;
+                    scrollValue -= 500;
                     carouselContent.scrollTo({ left: scrollValue, behavior: 'smooth' });
                 }
             });

@@ -116,6 +116,8 @@ export class LoginForm extends HTMLElement {
         }
 
         await this.#authService.iniciarSesion(name, password);
+        await this.#countService.agregarCuenta(0, new Date(), null);
+        
         this.handleLoginSuccess();
       } catch (error) {
         this.showMessage(error.message, true);
@@ -154,9 +156,6 @@ export class LoginForm extends HTMLElement {
           maternalSurname,
           password,
         });
-
-        const count = await this.#countService.agregarCuenta(0, new Date(), null);
-        localStorage.setItem('countId', count.id);
 
         this.showMessage("Registro exitoso. Por favor inicia sesión.");
         this.#isLoginView = true;

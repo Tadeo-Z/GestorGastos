@@ -25,7 +25,7 @@ class DeudasScreen extends HTMLElement {
 
     async loadDeudas() {
         const token = localStorage.getItem('authToken');
-        const res = await fetch('http://localhost:3000/api/expenses', {
+        const res = await fetch(`http://localhost:3000/api/expenses/user/${localStorage.getItem('userId')}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const deudas = await res.json();
