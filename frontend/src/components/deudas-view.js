@@ -15,7 +15,7 @@ export class DeudasView extends HTMLElement {
             <section class="deudas-container">
                 <header>
                     <h1>Tus Deudas</h1>
-                    <button id="add-expense" class="pagar-btn">Agregar deuda</button>
+                    <button id="add-expense" class="agregarDeudaBtn">+ Agregar deuda</button>
                 </header>
                 <div id="deudasList" class="deuda-list"></div>
                 <footer class="barra-progreso">

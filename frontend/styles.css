@@ -101,8 +101,17 @@ header h1 {
     margin-bottom: 2rem;
 }
 
+.agregarDeudaBtn {
+    padding: 0.8rem 1rem;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
 #crearGrupoBtn {
-    padding: 0.5rem 1rem;
+    padding: 0.8rem 1rem;
     background-color: #4caf50;
     color: white;
     border: none;
