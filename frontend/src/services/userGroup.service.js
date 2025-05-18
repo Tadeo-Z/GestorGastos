@@ -2,6 +2,7 @@ import { AuthService } from "./auth.service.js";
 
 export class UserGroupService {
     #urlService = 'http://localhost:3000/api/userGroups/';
+    #urlServiceGroup = 'group/'
     #authService = new AuthService();
 
     async obtenerUsuarioGrupos() {
@@ -25,6 +26,23 @@ export class UserGroupService {
         const token = this.#authService.obtenerToken();
 
         let response = await fetch(this.#urlService + userGroupId, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        });
+
+        if(!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        let json = await response.json();
+        return json;
+    }
+
+    async obtenerGruposUsuarioGrupo(groupId) {
+        const token = this.#authService.obtenerToken();
+
+        let response = await fetch(this.#urlService + this.#urlServiceGroup + groupId, {
             headers: {
                 Authorization: `Bearer ${token}`
             },

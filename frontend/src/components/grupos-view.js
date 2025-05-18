@@ -57,7 +57,17 @@ export class GruposView extends HTMLElement {
     async loadGrupos() {
         try {
             const grupos = await this.#groupService.obtenerGrupos();
-            this.renderGrupos(grupos);
+            
+            const gruposConMiembros = await Promise.all(
+            grupos.map(async (grupo) => {
+                const miembros = await this.#userGroupService.obtenerGruposUsuarioGrupo(grupo.id);
+                    return {
+                        ...grupo,
+                        totalMiembros: miembros?.length || 0
+                    };
+                })
+            );
+            this.renderGrupos(gruposConMiembros);
         } catch (err) {
             console.error("Error al cargar grupos: ", err);
         }
@@ -69,7 +79,7 @@ export class GruposView extends HTMLElement {
                 <div class="grupo-card">
                     <div>
                     <h3>${grupo.description}</h3>
-                    <p>Miembros: ${grupo.miembros?.length || 0}</p>
+                    <p>Miembros: ${grupo.totalMiembros}</p>
                     </div>
                     <div class="acciones">
                     <button data-id="${grupo.id}" class="ver-btn">Ver</button>
