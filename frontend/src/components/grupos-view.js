@@ -56,17 +56,23 @@ export class GruposView extends HTMLElement {
 
     async loadGrupos() {
         try {
-            const grupos = await this.#groupService.obtenerGrupos();
+            const AllGrupos = await this.#groupService.obtenerGrupos();
+            const userGrupos = await this.#userGroupService.obtenerGruposPorUsuario(localStorage.getItem('userId'));
+            
+            const gruposDelUsuario = AllGrupos.filter(grupo => 
+                userGrupos.some(userGrupo => userGrupo.id === grupo.id)
+            );
             
             const gruposConMiembros = await Promise.all(
-            grupos.map(async (grupo) => {
-                const miembros = await this.#userGroupService.obtenerGruposUsuarioGrupo(grupo.id);
+                gruposDelUsuario.map(async (grupo) => {
+                    const miembros = await this.#userGroupService.obtenerGruposUsuarioGrupo(grupo.id);
                     return {
                         ...grupo,
                         totalMiembros: miembros?.length || 0
                     };
                 })
             );
+
             this.renderGrupos(gruposConMiembros);
         } catch (err) {
             console.error("Error al cargar grupos: ", err);
