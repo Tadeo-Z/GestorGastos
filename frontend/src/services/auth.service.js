@@ -21,6 +21,7 @@ export class AuthService {
 
       localStorage.setItem("authToken", token);
       localStorage.setItem("usuario", JSON.stringify(usuario));
+      localStorage.setItem("userId", usuario.id)
 
       return { token, usuario };
     } catch (error) {

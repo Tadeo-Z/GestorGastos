@@ -2,26 +2,12 @@ export class HomeScreen extends HTMLElement {
     connectedCallback() {
         this.render();
         this.loadData(); // Lógica para cargar datos de la API
-        this.setupReportButtons(); // Añadimos la configuración de botones para los reportes
-     this.addDeudasModalListeners();
-     this.addDeudasModalListeners();
+        //this.setupReportButtons(); // Añadimos la configuración de botones para los reportes
+        this.addDeudasModalListeners();
     }
 
     render() {
         this.innerHTML = `
-            <section class="home-container">
-            <header>
-                <h1>Inicio</h1>
-            </header>
-            <section class="section-grid">
-                <div class="section">
-                    <h2 id="abrirDeudasModal" style="cursor:pointer;">Tus Deudas</h2>
-                    <div id="deudasCarousel" class="carousel-container">
-                        <button class="carousel-btn left" id="prevDeudas">&lt;</button>
-                        <div id="deudasList" class="carousel-content"></div>
-                        <button class="carousel-btn right" id="nextDeudas">&gt;</button>
-                    </div>
-                </div>
             <header>
                 <h1>Inicio</h1>
             </header>
@@ -83,10 +69,10 @@ async loadData() {
             throw new Error("Token no encontrado. Por favor, inicia sesión nuevamente.");
         }
 
-        const [deudas, grupos, userGroups, contactos] = await Promise.all([
+        const [deudas /*grupos, userGroups, contactos*/] = await Promise.all([
             fetch('http://localhost:3000/api/expenses', {
                 headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => res.json()),
+            })/*.then(res => res.json()),
             fetch('http://localhost:3000/api/groups', {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.json()),
@@ -95,7 +81,7 @@ async loadData() {
             }).then(res => res.json()),
             fetch('http://localhost:3000/api/contactos', {
                 headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => {
+            })*/.then(res => {
                 if (!res.ok) {
                     throw new Error(`Error al obtener contactos: ${res.statusText}`);
                 }
@@ -104,22 +90,23 @@ async loadData() {
         ]);
 
         console.log('Deudas:', deudas);
+        /*
         console.log('Grupos:', grupos);
         console.log('UserGroups:', userGroups);
-        console.log('Contactos:', contactos);
+        console.log('Contactos:', contactos);*/
 
         const decodedToken = JSON.parse(atob(token.split('.')[1]));
         const userId = decodedToken.id; // Cambiado de userId a id
         console.log('User ID:', userId); // Verificar que el ID del usuario sea correcto
 
         // Filtrar grupos del usuario
-        const userGroupIds = userGroups
-            .filter(ug => ug.userId === userId)
+        /*const userGroupIds = userGroups
+            .filter(ug => ug.userId === localStorage.getItem("userId"))
             .map(ug => ug.groupId);
         console.log('userGroupIds:', userGroupIds);
 
         const gruposDelUsuario = grupos.filter(grupo => userGroupIds.includes(grupo.id));
-        console.log('gruposDelUsuario:', gruposDelUsuario);
+        console.log('gruposDelUsuario:', gruposDelUsuario);*/
 
         this.deudas = deudas; // <--- AGREGA ESTA LÍNEA
 
@@ -127,8 +114,9 @@ async loadData() {
 
         // Rellenar las listas con datos
         this.populateList("deudasList", deudas, "deuda");
+        /*
         this.populateList("gruposList", gruposDelUsuario, "grupo");
-        this.populateList("contactosList", contactos, "contacto");
+        this.populateList("contactosList", contactos, "contacto");*/
 
         this.initializeCarousel();
     } catch (err) {
@@ -196,12 +184,13 @@ populateList(id, items, tipo) {
         `).join("");
     }
 
+    /*
     container.querySelectorAll(".pagar-btn").forEach(btn => {
         btn.addEventListener("click", async (e) => {
             const id = e.target.dataset.id;
             await this.pagarDeuda(id);
         });
-    });
+    });*/
 
     container.querySelectorAll(".eliminar-btn").forEach(btn => {
         btn.addEventListener("click", async (e) => {
@@ -326,6 +315,7 @@ mostrarDetalleDeuda(id) {
 
             const maxScroll = carouselContent.scrollWidth - carouselContent.clientWidth;
 
+            /*
             nextBtn.addEventListener("click", () => {
                 if (scrollValue < maxScroll) {
                     scrollValue += itemWidth;
@@ -338,10 +328,11 @@ mostrarDetalleDeuda(id) {
                     scrollValue -= itemWidth;
                     carouselContent.scrollTo({ left: scrollValue, behavior: 'smooth' });
                 }
-            });
+            });*/
         });
     }
 
+    /**
     setupReportButtons() {
         const gastosDiariosBtn = this.querySelector("#gastosDiarios");
         const gastosSemanalesBtn = this.querySelector("#gastosSemanales");
@@ -352,7 +343,7 @@ mostrarDetalleDeuda(id) {
         gastosSemanalesBtn.addEventListener("click", () => this.showGastosReport('semanales'));
         gastosMensualesBtn.addEventListener("click", () => this.showGastosReport('mensuales'));
         ahorrosBtn.addEventListener("click", () => this.showAhorrosReport());
-    }
+    }*/
 
     showGastosReport(periodo) {
         console.log(`Mostrando reporte de gastos ${periodo}`);

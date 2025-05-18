@@ -21,16 +21,6 @@ class ExpenseDAO {
         }
     }
 
-    // Crear un nuevo gasto
-    static async createExpense(expenseData) {
-        try {
-            return await Expense.create(expenseData);
-        } catch (error) {
-            console.log('Error creando el gasto: ', error);
-            throw error;
-        }
-    }
-
     // Crear un nuevo gasto con usuario y cuenta
     static async createExpense(userId, countId, expenseData) {
         try {

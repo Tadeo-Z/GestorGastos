@@ -39,15 +39,15 @@ export class ExpenseService {
         return json;
     }
 
-    async agregarGasto(amount, quoteDate, paid, userId, countId) {
+    async agregarGasto(name, amount, quoteDate, paid, userId) {
         const token = this.#authService.obtenerToken();
 
         const nuevoGasto = {
+            name,
             amount,
             quoteDate,
             paid,
-            userId,
-            countId
+            userId
         };
 
         let response = await fetch(this.#urlService, {
@@ -67,15 +67,14 @@ export class ExpenseService {
         return json;
     }
 
-    async editarGasto(amount, quoteDate, paid, userId, countId) {
+    async editarGasto(name, amount, quoteDate, paid, userId, countId) {
         const token = this.#authService.obtenerToken();
 
         const nuevoGasto = {
+            name,
             amount,
             quoteDate,
-            paid,
-            userId,
-            countId
+            paid
         };
 
         let response = await fetch(this.#urlService, {

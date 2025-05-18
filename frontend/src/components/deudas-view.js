@@ -2,10 +2,12 @@ import { ExpenseService } from "../services/expense.service.js";
 
 export class DeudasView extends HTMLElement {
     #expenseService = new ExpenseService();
+    #isFormVisible = false;
 
     connectedCallback() {
         this.render();
         this.loadDeudas();
+        this.attachEvents();
     }
 
     render() {
@@ -13,17 +15,42 @@ export class DeudasView extends HTMLElement {
             <section class="deudas-container">
                 <header>
                     <h1>Tus Deudas</h1>
-                    <button >Agregar deuda</button>
+                    <button id="add-expense" >Agregar deuda</button>
                 </header>
                 <div id="deudasList" class="deuda-list"></div>
                 <footer class="barra-progreso">
-                <div class="barra">
-                    <div id="progresoPagado" class="progreso-pagado"></div>
-                </div>
-                <p id="textoProgreso"></p>
+                    <div class="barra">
+                        <div id="progresoPagado" class="progreso-pagado"></div>
+                    </div>
+                    <p id="textoProgreso"></p>
                 </footer>
+
+                <div id="deudaModal" class="modal ${this.#isFormVisible ? 'visible' : ''}">
+                    <div class="modal-content">
+                        <span class="close-modal">&times;</span>
+                        <h2>Agregar Nueva Deuda</h2>
+                        <form id="deudaForm">
+                            <div class="form-group">
+                                <label for="deudaNombre">Nombre de la deuda</label>
+                                <input type="text" id="deudaNombre" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="deudaMonto">Monto ($)</label>
+                                <input type="number" id="deudaMonto" min="0" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="deudaFecha">Fecha límite</label>
+                                <input type="date" id="deudaFecha" required>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">Guardar Deuda</button>
+                        </form>
+                    </div>
+                </div>
             </section>
-    `;
+        `;
     }
 
     async loadDeudas() {
@@ -34,6 +61,25 @@ export class DeudasView extends HTMLElement {
         } catch (error) {
             console.error('Error al cargar las deudas: ', error);
         }
+    }
+
+    attachEvents() {
+        this.querySelector('#add-expense').addEventListener('click', () => {
+            this.#isFormVisible = true;
+            this.render();
+            this.attachEvents();
+        });
+
+        this.querySelector('.close-modal')?.addEventListener('click', () => {
+            this.#isFormVisible = false;
+            this.render();
+            this.attachEvents();
+        });
+
+        this.querySelector('#deudaForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.agregarDeuda();
+        });
     }
 
     renderDeudas(deudas) {
@@ -63,6 +109,29 @@ export class DeudasView extends HTMLElement {
                 await this.pagarDeuda(id);
             });
         });
+    }
+
+    async agregarDeuda() {
+        try {
+            const name = this.querySelector('#deudaNombre').value;
+            const amount = parseFloat(this.querySelector('#deudaMonto').value);
+            const quoteDate = this.querySelector('#deudaFecha').value;
+
+            const result = await this.#expenseService.agregarGasto(name, amount, quoteDate, 0, localStorage.getItem("userId"));
+
+            if(result) {
+                alert('Deuda agregada correctamente');
+                this.#isFormVisible = false;
+                this.render();
+                this.loadDeudas();
+                this.attachEvents();
+            } else {
+                throw new Error('Error al guardar la deuda');
+            }
+        } catch (error) {
+            console.error(`Error al guardar la deuda: ${error.message}`);
+            alert('Error al guardar la deuda');
+        }
     }
 
     async pagarDeuda(id) {
