@@ -60,6 +60,16 @@ button {
     cursor: pointer;
 }
 
+#logoutBtn {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+
 @media (max-width: 600px) {
     form {
         width: 90%;

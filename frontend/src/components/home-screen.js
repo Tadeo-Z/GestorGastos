@@ -1,15 +1,23 @@
+import { AuthService } from "../services/auth.service.js";
+
 export class HomeScreen extends HTMLElement {
     connectedCallback() {
         this.render();
         this.loadData(); // Lógica para cargar datos de la API
         //this.setupReportButtons(); // Añadimos la configuración de botones para los reportes
         this.addDeudasModalListeners();
+        this.querySelector("#logoutBtn").addEventListener("click", () => {
+            const authService = new AuthService();
+            authService.cerrarSesion();
+            this.dispatchEvent(new CustomEvent("logout", { bubbles: true}));
+        })
     }
 
     render() {
         this.innerHTML = `
             <header>
                 <h1>Inicio</h1>
+                <button id="logoutBtn">Cerrar sesión</button>
             </header>
             <section class="section-grid">
                 <div class="section">
