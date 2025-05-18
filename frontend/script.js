@@ -33,6 +33,7 @@ function loadAuthenticatedView() {
     mainContainer.innerHTML = `
         <home-screen></home-screen>
         <deudas-view></deudas-view>
+        <grupos-view></grupos-view>
     `;
 }
 
