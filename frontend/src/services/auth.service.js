@@ -21,7 +21,8 @@ export class AuthService {
 
       localStorage.setItem("authToken", token);
       localStorage.setItem("usuario", JSON.stringify(usuario));
-      localStorage.setItem("userId", usuario.id)
+      localStorage.setItem("userId", usuario.id);
+      localStorage.setItem("countId", usuario.id);
 
       return { token, usuario };
     } catch (error) {
@@ -57,6 +58,8 @@ export class AuthService {
   cerrarSesion() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("usuario");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("countId");
     document.dispatchEvent(new CustomEvent("logout"));
   }
 

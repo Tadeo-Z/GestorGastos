@@ -31,7 +31,12 @@ export class HomeScreen extends HTMLElement {
 
                 <div class="section">
                   <h2>Tus Grupos</h2>
-                  <div id="gruposList" class="item-list"></div>
+                  <div id="deudasCarousel" class="carousel-container">
+                        <button class="carousel-btn left" id="prevGrupos">&lt;</button>
+                        <div id="gruposList" class="carousel-content"></div>
+                        <button class="carousel-btn right" id="nextGrupos">&gt;</button>
+                  </div>
+                  <!-- <div id="gruposList" class="item-list"></div> -->
                 </div>
 
                 <div class="section">
@@ -74,14 +79,14 @@ export class HomeScreen extends HTMLElement {
                 throw new Error("Token no encontrado. Por favor, inicia sesión nuevamente.");
             }
 
-            const [deudas, grupos, userGroups /*, contactos*/] = await Promise.all([
+            const [deudas, grupos, gruposUsuario /*gruposUsuario*/] = await Promise.all([
                 fetch(`http://localhost:3000/api/expenses/user/${localStorage.getItem('userId')}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()),
-            fetch('http://localhost:3000/api/groups', {
+            fetch(`http://localhost:3000/api/groups`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.json()),
-            fetch('http://localhost:3000/api/userGroups', {
+            fetch(`http://localhost:3000/api/userGroups/user/${localStorage.getItem('userId')}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })/*.then(res => res.json()),
             fetch('http://localhost:3000/api/contactos', {
@@ -96,26 +101,17 @@ export class HomeScreen extends HTMLElement {
 
             console.log('Deudas:', deudas);
             console.log('Grupos:', grupos);
-            console.log('UserGroups:', userGroups);
-            /*
-            console.log('Contactos:', contactos);*/
+            console.log('Grupos del usuaio:', gruposUsuario);
 
             const decodedToken = JSON.parse(atob(token.split('.')[1]));
             const userId = decodedToken.id; // Cambiado de userId a id
             console.log('User ID:', userId); // Verificar que el ID del usuario sea correcto
-
-            // Filtrar grupos del usuario
-            const userGroupIds = userGroups
-                .filter(ug => ug.userId === localStorage.getItem("userId"))
-                .map(ug => ug.groupId);
-            console.log('userGroupIds:', userGroupIds);
     
-            const gruposDelUsuario = grupos.filter(grupo => userGroupIds.includes(grupo.id));
-            console.log('gruposDelUsuario:', gruposDelUsuario);
+            const gruposDelUsuario = await grupos.filter(grupo => 
+                gruposUsuario.some(grupoUsuario => grupoUsuario.id === grupo.id)
+            );
 
-            this.deudas = deudas; // <--- AGREGA ESTA LÍNEA
-
-            this.deudas = deudas; // <--- AGREGA ESTA LÍNEA
+            this.deudas = deudas;
 
             // Rellenar las listas con datos
             this.populateList("deudasList", deudas, "deuda");
@@ -187,13 +183,12 @@ export class HomeScreen extends HTMLElement {
         `).join("");
         }
 
-        /*
         container.querySelectorAll(".pagar-btn").forEach(btn => {
             btn.addEventListener("click", async (e) => {
                 const id = e.target.dataset.id;
                 await this.pagarDeuda(id);
             });
-        });*/
+        });
 
         container.querySelectorAll(".eliminar-btn").forEach(btn => {
             btn.addEventListener("click", async (e) => {
@@ -250,8 +245,7 @@ export class HomeScreen extends HTMLElement {
         const container = this.querySelector(`#${id}`);
         container.innerHTML = items.map(item => `
             <div class="card ${tipo}">
-                <!-- <img src="/assets/${tipo}.png" alt="${tipo}" /> -->
-                <p>${item.name}</p>
+                <p>${item.name || item.description || 'Sin nombre'}</p>
             </div>
         `).join("");
     }
@@ -301,9 +295,9 @@ export class HomeScreen extends HTMLElement {
     }
     initializeCarousel() {
         const carousels = [
-            { prevBtnId: "prevDeudas", nextBtnId: "nextDeudas", listId: "deudasList" }
-            /*{ prevBtnId: "prevGrupos", nextBtnId: "nextGrupos", listId: "gruposList" },
-            { prevBtnId: "prevContactos", nextBtnId: "nextContactos", listId: "contactosList" }*/
+            { prevBtnId: "prevDeudas", nextBtnId: "nextDeudas", listId: "deudasList" },
+            { prevBtnId: "prevGrupos", nextBtnId: "nextGrupos", listId: "gruposList" }
+            /*{ prevBtnId: "prevContactos", nextBtnId: "nextContactos", listId: "contactosList" }*/
         ];
 
         carousels.forEach(carousel => {
@@ -317,19 +311,18 @@ export class HomeScreen extends HTMLElement {
             }
 
             let scrollValue = 0;
-            const itemWidth = carouselContent.querySelector(".carousel-item")?.offsetWidth || 200; // Asume un tamaño razonable por defecto
             const maxScroll = carouselContent.scrollWidth - carouselContent.clientWidth;
 
             nextBtn.addEventListener("click", () => {
                 if (scrollValue < maxScroll) {
-                    scrollValue += itemWidth;
+                    scrollValue += 300;
                     carouselContent.scrollTo({ left: scrollValue, behavior: 'smooth' });
                 }
             });
 
             prevBtn.addEventListener("click", () => {
                 if (scrollValue > 0) {
-                    scrollValue -= itemWidth;
+                    scrollValue -= 300;
                     carouselContent.scrollTo({ left: scrollValue, behavior: 'smooth' });
                 }
             });
