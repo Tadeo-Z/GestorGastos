@@ -37,8 +37,8 @@ const addGroup = async(req, res) => {
             creationDate: creationDate
         }
 
-        await GroupDAO.createGroup(group);
-        res.json(group);
+        const createdGroup = await GroupDAO.createGroup(group);
+        res.json(createdGroup);
     } catch (error) {
         throw new AppError('No se pudo agregar el grupo', 500);
     }

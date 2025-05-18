@@ -38,12 +38,14 @@ export class UserGroupService {
         return json;
     }
 
-    async agregarUsuarioGrupo(entryDate, rol) {
+    async agregarUsuarioGrupo(entryDate, rol, userId, groupId) {
         const token = this.#authService.obtenerToken();
 
         const nuevoUsuarioGrupo = {
             entryDate,
-            rol
+            rol,
+            userId,
+            groupId
         };
 
         let response = await fetch(this.#urlService, {

@@ -1,7 +1,9 @@
 import { GroupService } from "../services/group.service.js";
+import { UserGroupService } from "../services/userGroup.service.js";
 
 export class GruposView extends HTMLElement {
     #groupService = new GroupService();
+    #userGroupService = new UserGroupService();
 
     connectedCallback() {
         this.render();
@@ -94,8 +96,9 @@ export class GruposView extends HTMLElement {
     async crearGrupo(description) {
         try {
             const group = await this.#groupService.agregarGrupo(description);
+            const userGroup = await this.#userGroupService.agregarUsuarioGrupo(new Date(), 'Administrador', localStorage.getItem("userId"), group.id);
 
-            if (group) {
+            if (group && userGroup) {
                 alert("Grupo creado correctamente.");
                 this.loadGrupos();
             } else {
