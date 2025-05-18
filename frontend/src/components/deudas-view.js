@@ -55,7 +55,7 @@ export class DeudasView extends HTMLElement {
 
     async loadDeudas() {
         try {
-            const deudas = await this.#expenseService.obtenerGastos();
+            const deudas = await this.#expenseService.obtenerGastoPorUsuario(localStorage.getItem('userId'));
             this.renderDeudas(deudas);
             this.updateProgress(deudas);
         } catch (error) {

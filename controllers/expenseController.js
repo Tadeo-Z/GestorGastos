@@ -10,6 +10,16 @@ const getExpenses = async(req, res) => {
     }
 }
 
+const getExpensesByUserId = async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const expenses = await ExpenseDAO.getExpensesByUserId(userId);
+        res.json(expenses.map(expense => expense.toJSON()));
+    } catch (error) {
+        throw new AppError('No se pudieron obtener los gastos del usuario', 500);
+    }
+}
+
 const getExpense = async(req, res) => {
     try {
         const { id } = req.params;
@@ -101,6 +111,7 @@ const payExpense = async(req, res) => {
 
 module.exports = {
     getExpenses,
+    getExpensesByUserId,
     getExpense,
     addExpense,
     updateExpense,

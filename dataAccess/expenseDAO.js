@@ -21,6 +21,17 @@ class ExpenseDAO {
         }
     }
 
+    // Obtener gastos por el id del usuario
+    static async getExpensesByUserId(userId) {
+        try {
+            const expenses = await Expense.findAll({ where: { userId: userId }});
+            return expenses;
+        } catch (error) {
+            console.log('Error obteniendo los gastos: ', error);
+            throw error;
+        }
+    }
+
     // Crear un nuevo gasto con usuario y cuenta
     static async createExpense(userId, countId, expenseData) {
         try {

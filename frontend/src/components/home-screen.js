@@ -67,7 +67,7 @@ export class HomeScreen extends HTMLElement {
             }
 
             const [deudas, grupos, userGroups /*, contactos*/] = await Promise.all([
-                fetch('http://localhost:3000/api/expenses', {
+                fetch(`http://localhost:3000/api/expenses/user/${localStorage.getItem('userId')}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()),
             fetch('http://localhost:3000/api/groups', {
