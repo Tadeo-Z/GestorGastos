@@ -8,6 +8,7 @@ const groupRoutes = require('./routes/groupRoute');
 const userGroupRoutes = require('./routes/userGroupRoute');
 const countRoutes = require('./routes/countRoute');
 const expenseRoutes = require('./routes/expenseRoute');
+const contactRouters = require('./routes/contactRoute');
 const authRoutes = require('./routes/authRoute'); // Nueva ruta para autenticación
 const { User, Group, UserGroup, Count, Expense } = require('./models');
 const morgan = require('morgan');
@@ -37,6 +38,7 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/userGroups', userGroupRoutes);
 app.use('/api/counts', countRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/contacts', contactRouters);
 app.use('/api/auth', authRoutes); // Nueva ruta para autenticación
 
 // Manejo de rutas no encontradas
@@ -52,9 +54,4 @@ app.use(globalErrorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`El servidor está escuchando en el puerto ${PORT}`);
-});
-sequelize.sync({ alter: true }).then(() => {
-    console.log('Tablas creadas');
-}).catch(error => {
-    console.error('Error sincronizando el modelo con la base de datos', error);
 });

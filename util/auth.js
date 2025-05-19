@@ -13,18 +13,20 @@ const generateToken = (user) => {
 
 // Middleware para autenticar usuarios mediante tokens JWT
 const auth = (req, res, next) => {
-    const token = req.header('Authorization');
+    const authHeader = req.header('Authorization');
 
-    if (!token) {
-        throw new AppError('Acceso denegado, no hay token', 401);
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return next(new AppError('Acceso denegado, no hay token', 401));
     }
 
+    const token = authHeader.split(' ')[1]; // Extrae el token solo despues de Bearer
+
     try {
-        const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     } catch (error) {
-        throw new AppError('Token inválido', 401);
+        return next(new AppError('Token inválido', 401));
     }
 };
 
