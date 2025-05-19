@@ -1,7 +1,7 @@
-import { AuthService } from "./auth.service";
+import { AuthService } from "./auth.service.js";
 
 export class ContactosService {
-    #urlService = "http://localhost:3000/api/contactos";
+    #urlService = "http://localhost:3000/api/contacts";
     #authService = new AuthService();
 
     async obtenerContactos() {
@@ -16,16 +16,16 @@ export class ContactosService {
         return await res.json();
     }
 
-    async agregarContacto(contactoId) {
+    async agregarContacto(contactName) {
         const token = this.#authService.obtenerToken();
 
-        const res = await fetch(this.#urlService, {
+        const res = await fetch(`http://localhost:3000/api/contacts`, {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
             },
-            body: JSON.stringify({ contactoId }),
+            body: JSON.stringify({ contactName: contactName }),
         });
 
         if (!res.ok) {
@@ -36,10 +36,10 @@ export class ContactosService {
         return await res.json();
     }
 
-    async eliminarContacto(contactoId) {
+    async eliminarContacto(contactoName) {
         const token = this.#authService.obtenerToken();
 
-        const res = await fetch(`${this.#urlService}/${contactoId}`, {
+        const res = await fetch(`${this.#urlService}/${contactoName}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
         });

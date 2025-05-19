@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service.js";
 
 export class UserService {
     #urlService = 'http://localhost:3000/api/users';
+    #urlByName = '/name/';
     #authService = new AuthService();
     #registerUrl = 'https://localhost:3000/api/auth/register';
 
@@ -27,6 +28,23 @@ export class UserService {
         const token = this.#authService.obtenerToken();
 
         let response = await fetch(this.#urlService + userId, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        });
+
+        if(!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        let json = await response.json();
+        return json;
+    }
+
+    async obtenerUsuarioPorNombre(name)  {
+        const token = this.#authService.obtenerToken();
+
+        let response = await fetch(this.#urlService + this.#urlByName + name, {
             headers: {
                 Authorization: `Bearer ${token}`
             },

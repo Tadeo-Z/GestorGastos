@@ -1,7 +1,9 @@
 import { UserService } from "../services/user.service.js";
+import { ContactosService } from "../services/contacts.service.js";
 
 export class ContactosView extends HTMLElement {
   #userService = new UserService();
+  #contactosService = new ContactosService();
 
   connectedCallback() {
     this.render();
@@ -66,7 +68,7 @@ export class ContactosView extends HTMLElement {
 
   async loadContactos() {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("authToken");
       console.log("Token enviado: ", token);
       const res = await fetch("http://localhost:3000/api/contacts", {
         headers: { Authorization: `Bearer ${token}` },
@@ -91,8 +93,8 @@ export class ContactosView extends HTMLElement {
       .map(
         (c) => `
         <div class="contacto-card">
-          <span>${c.nombre}</span>
-          <button class="eliminar-btn" data-nombre="${c.nombre}">Eliminar</button>
+          <span>${c.name}</span>
+          <button class="eliminar-btn" data-nombre="${c.name}">Eliminar</button>
         </div>
       `
       )
@@ -112,19 +114,9 @@ export class ContactosView extends HTMLElement {
     const container = this.querySelector("#resultadoBusqueda");
     container.innerHTML = "<p>Cargando resultados...</p>";
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `http://localhost:3000/api/users/name/${encodeURIComponent(nombre)}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const usuarios = await this.#userService.obtenerUsuarioPorNombre(nombre);
 
-      if (!res.ok) throw new Error("Error al buscar usuario.");
-
-      const usuarios = await res.json();
-
-      if (usuarios.length === 0) {
+      if (usuarios === null) {
         container.innerHTML = "<p>No se encontraron usuarios.</p>";
         return;
       }
@@ -139,20 +131,16 @@ export class ContactosView extends HTMLElement {
   mostrarResultadoBusqueda = function(usuarios) {
     const container = this.querySelector("#resultadoBusqueda");
 
-    container.innerHTML = usuarios
-      .map(
-        (u) => `
-        <div class="contacto-card">
-          <span>${u.nombre}</span>
-          <button class="agregar-btn" data-nombre="${u.nombre}">Agregar</button>
-        </div>
-      `
-      )
-      .join("");
+    container.innerHTML = `
+      <div class="contacto-card">
+        <span>${usuarios.name}</span>
+        <button class="agregar-btn" data-name="${usuarios.name}">Agregar</button>
+      </div>
+    `;
 
     container.querySelectorAll(".agregar-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        const name = btn.dataset.nombre;
+        const name = btn.dataset.name;
 
         btn.disabled = true;
         btn.textContent = "Agregando...";
@@ -169,19 +157,11 @@ export class ContactosView extends HTMLElement {
     });
   };
 
-  async agregarContacto(name) {
+  async agregarContacto(contactName) {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`/api/contacts`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ contactName: name }),
-      });
+      const res = await this.#contactosService.agregarContacto(contactName);
 
-      if (res.ok) {
+      if (res) {
         alert("Contacto agregado.");
         this.loadContactos();
       } else if (res.status === 400) {
@@ -198,8 +178,8 @@ export class ContactosView extends HTMLElement {
 
   async eliminarContacto(name) {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`/api/contacts/${encodeURIComponent(name)}`, {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch(`http://localhost:3000/api/contacts/${encodeURIComponent(name)}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

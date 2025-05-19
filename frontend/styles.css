@@ -436,7 +436,8 @@ header h1 {
 }
 
 .agregar-btn {
-  background-color: var(--color-info);
+  background-color: #4caf50;
+  color: white;
 }
 
 /* Chat */
