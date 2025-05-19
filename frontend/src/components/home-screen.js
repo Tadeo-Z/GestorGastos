@@ -36,18 +36,22 @@ export class HomeScreen extends HTMLElement {
                         <div id="gruposList" class="carousel-content"></div>
                         <button class="carousel-btn right" id="nextGrupos">&gt;</button>
                   </div>
-                  <!-- <div id="gruposList" class="item-list"></div> -->
                 </div>
 
                 <div class="section">
                   <h2>Tus Contactos</h2>
-                  <div id="contactosList" class="item-list"></div>
+                  <div id="deudasCarousel" class="carousel-container">
+                        <button class="carousel-btn left" id="prevContactos">&lt;</button>
+                        <div id="contactosList" class="carousel-content"></div>
+                        <button class="carousel-btn right" id="nextContactos">&gt;</button>
+                  </div>
                 </div>
-                
+                <!--
                 <div class="section">
                   <h2>Reportes</h2>
                   <div id="reportesList" class="item-list"></div>
                 </div>
+                -->
               </section>
             </section>
             <div id="chartContainer" style="margin-top: 2rem;"></div>
@@ -79,7 +83,7 @@ export class HomeScreen extends HTMLElement {
                 throw new Error("Token no encontrado. Por favor, inicia sesión nuevamente.");
             }
 
-            const [deudas, grupos, gruposUsuario /*gruposUsuario*/] = await Promise.all([
+            const [deudas, grupos, gruposUsuario, contacts] = await Promise.all([
                 fetch(`http://localhost:3000/api/expenses/user/${localStorage.getItem('userId')}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()),
@@ -88,10 +92,10 @@ export class HomeScreen extends HTMLElement {
             }).then(res => res.json()),
             fetch(`http://localhost:3000/api/userGroups/user/${localStorage.getItem('userId')}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
-            })/*.then(res => res.json()),
-            fetch('http://localhost:3000/api/contactos', {
+            }).then(res => res.json()),
+            fetch('http://localhost:3000/api/contacts', {
                 headers: { 'Authorization': `Bearer ${token}` }
-            })*/.then(res => {
+            }).then(res => {
                     if (!res.ok) {
                         throw new Error(`Error al obtener contactos: ${res.statusText}`);
                     }
@@ -102,6 +106,7 @@ export class HomeScreen extends HTMLElement {
             console.log('Deudas:', deudas);
             console.log('Grupos:', grupos);
             console.log('Grupos del usuaio:', gruposUsuario);
+            console.log('Contactos: ', contacts);
 
             const decodedToken = JSON.parse(atob(token.split('.')[1]));
             const userId = decodedToken.id; // Cambiado de userId a id
@@ -116,8 +121,7 @@ export class HomeScreen extends HTMLElement {
             // Rellenar las listas con datos
             this.populateList("deudasList", deudas, "deuda");
             this.populateList("gruposList", gruposDelUsuario, "grupo");
-            /*
-            this.populateList("contactosList", contactos, "contacto");*/
+            this.populateList("contactosList", contacts, "contacto");
 
             this.initializeCarousel();
         } catch (err) {
@@ -216,18 +220,14 @@ export class HomeScreen extends HTMLElement {
                 fetch('http://localhost:3000/api/groups', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(res => res.json()),
-                fetch('http://localhost:3000/api/userGroups', {
+                fetch('http://localhost:3000/api/contacts', {
                     headers: { 'Authorization': `Bearer ${token}` }
-                }).then(res => res.json())/*,
-                fetch('http://localhost:3000/api/reportes', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }).then(res => res.json())*/
+                }).then(res => res.json())
             ]);
 
             this.populateList("deudasList", deudas, "deuda");
             this.populateList("gruposList", grupos, "grupo");
             this.populateList("contactosList", contactos, "contacto");
-            /*this.populateList("reportesList", reportes, "reporte");*/
         } catch (err) {
             console.error("Error cargando datos: ", err);
         }
@@ -288,8 +288,8 @@ export class HomeScreen extends HTMLElement {
     initializeCarousel() {
         const carousels = [
             { prevBtnId: "prevDeudas", nextBtnId: "nextDeudas", listId: "deudasList" },
-            { prevBtnId: "prevGrupos", nextBtnId: "nextGrupos", listId: "gruposList" }
-            /*{ prevBtnId: "prevContactos", nextBtnId: "nextContactos", listId: "contactosList" }*/
+            { prevBtnId: "prevGrupos", nextBtnId: "nextGrupos", listId: "gruposList" },
+            { prevBtnId: "prevContactos", nextBtnId: "nextContactos", listId: "contactosList" }
         ];
 
         carousels.forEach(carousel => {
