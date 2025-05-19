@@ -23,6 +23,17 @@ const getUser = async (req, res) => {
   }
 };
 
+const getUserByName = async (req, res) => {
+  try {
+    const { name } = req.params;
+    const user = await UserDAO.getUserByName(name);
+
+    res.json(user);
+  } catch (error) {
+    throw new AppError(`No se pudo obtener el usuario ${id}`, 500);
+  }
+}
+
 const registerUser = async (req, res, next) => {
   try {
     const { name, paternalSurname, maternalSurname, password } = req.body;
@@ -141,8 +152,9 @@ const loginUser = async (req, res, next) => {
 module.exports = {
   getUsers,
   getUser,
+  getUserByName,
   registerUser,
   updateUser,
   deleteUser,
-  loginUser,
+  loginUser
 };

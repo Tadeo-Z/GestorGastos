@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <home-screen></home-screen>
             <deudas-view></deudas-view>
             <grupos-view></grupos-view>
+            <contactos-view></contactos-view>
         `;
     } else {
         mainContainer.innerHTML = '<login-form></login-form>';
@@ -34,6 +35,7 @@ function loadAuthenticatedView() {
         <home-screen></home-screen>
         <deudas-view></deudas-view>
         <grupos-view></grupos-view>
+        <contactos-view></contactos-view>
     `;
 }
 

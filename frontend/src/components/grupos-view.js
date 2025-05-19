@@ -15,8 +15,8 @@ export class GruposView extends HTMLElement {
         this.innerHTML = `
             <section class="grupos-container">
                 <header>
-                <h1>Tus Grupos</h1>
-                <button id="crearGrupoBtn">+ Crear Grupo</button>
+                    <h1>Tus Grupos</h1>
+                    <button id="crearGrupoBtn">+ Crear Grupo</button>
                 </header>
 
                 <div id="gruposList" class="grupo-list"></div>

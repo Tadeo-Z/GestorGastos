@@ -10,9 +10,10 @@ class UserDAO {
             throw error;
         }
     }
+
     static async getUserByName(name) {
         try {
-            return await User.findOne({ where: { name } }); // Busca por el campo `name`
+            return await User.findOne({ where: { name } });
         } catch (error) {
             console.error('Error buscando al usuario:', error);
             throw error;
