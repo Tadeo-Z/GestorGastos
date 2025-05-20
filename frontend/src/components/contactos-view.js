@@ -68,13 +68,8 @@ export class ContactosView extends HTMLElement {
 
   async loadContactos() {
     try {
-      const token = localStorage.getItem("authToken");
-      console.log("Token enviado: ", token);
-      const res = await fetch("http://localhost:3000/api/contacts", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Error al cargar contactos");
-      const contactos = await res.json();
+      const contactos = await this.#contactosService.obtenerContactos();
+      if (!contactos) throw new Error("Error al cargar contactos");
       this.renderContactos(contactos);
     } catch (err) {
       console.error("Error al cargar contactos: ", err);
@@ -178,13 +173,9 @@ export class ContactosView extends HTMLElement {
 
   async eliminarContacto(name) {
     try {
-      const token = localStorage.getItem("authToken");
-      const res = await fetch(`http://localhost:3000/api/contacts/${encodeURIComponent(name)}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = this.#contactosService.eliminarContacto(name);
 
-      if (res.ok) {
+      if (res) {
         alert("Contacto eliminado.");
         this.loadContactos();
       } else {

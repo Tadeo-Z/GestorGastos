@@ -143,7 +143,6 @@ export class DeudasView extends HTMLElement {
             if (res != null) {
                 alert("Deuda pagada correctamente.");
                 this.loadDeudas(); // Recargar
-                location.reload();
             } else {
                 alert("Error al pagar la deuda.");
             }
