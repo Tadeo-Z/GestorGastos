@@ -10,6 +10,16 @@ const getExpenses = async(req, res) => {
     }
 }
 
+const getExpensesByUserId = async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const expenses = await ExpenseDAO.getExpensesByUserId(userId);
+        res.json(expenses.map(expense => expense.toJSON()));
+    } catch (error) {
+        throw new AppError('No se pudieron obtener los gastos del usuario', 500);
+    }
+}
+
 const getExpense = async(req, res) => {
     try {
         const { id } = req.params;
@@ -23,35 +33,39 @@ const getExpense = async(req, res) => {
 
 const addExpense = async(req, res) => {
     try {
-        const { amount, quoteDate, paid } = req.body;
+        const { name, amount, quoteDate, paid, userId, countId } = req.body;
 
-        if(!amount, !quoteDate, !paid) {
+        if(!name || !amount || !quoteDate || paid === undefined || !userId) {
             throw new AppError('Faltan campos para llenar', 500);
         }
 
         const expense = {
+            name: name,
             amount: amount,
             quoteDate: quoteDate,
-            paid: paid
+            paid: paid,
+            userId,
+            countId
         }
 
-        await ExpenseDAO.createExpense(expense);
+        await ExpenseDAO.createExpense(userId, countId, expense);
         res.json(expense);
     } catch (error) {
-        throw new AppError('No se pudo agregar el grupo', 500);
+        throw new AppError('No se pudo agregar el gasto' + error.message, 500);
     }
 }
 
 const updateExpense = async(req, res) => {
     try {
         const { id } = req.params;
-        const { amount, quoteDate, paid } = req.body;
+        const { name, amount, quoteDate, paid } = req.body;
 
-        if(!amount, !quoteDate, !paid) {
+        if(!name, !amount, !quoteDate, !paid) {
             throw new AppError('Faltan campos para llenar', 500);
         }
 
         const expense = {
+            name: name,
             amount: amount,
             quoteDate: quoteDate,
             paid: paid
@@ -80,10 +94,27 @@ const deleteExpense = async(req, res) => {
     }
 }
 
+const payExpense = async(req, res) => {
+    try {
+        const { id } = req.params;
+        const expense = await ExpenseDAO.pagarExpense(id);
+
+        if(!expense) {
+            throw new AppError('Gasto no encontrado', 404);
+        }
+
+        res.status(200).json({ message: 'Gasto pagado correctamente' });
+    } catch (error) {
+        throw new AppError(`No se pudo pagar el gasto ${id}`, 500);
+    }
+}
+
 module.exports = {
     getExpenses,
+    getExpensesByUserId,
     getExpense,
     addExpense,
     updateExpense,
-    deleteExpense
+    deleteExpense,
+    payExpense
 }

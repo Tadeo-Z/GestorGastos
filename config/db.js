@@ -1,4 +1,4 @@
-require('dotenv').config(); // Cargar las variables del .env
+require('dotenv').config({ path: '.config.env' }); // Cargar las variables del .env
 const { Sequelize } = require('sequelize');
 
 console.log('Dialect:', process.env.DB_DIALECT); // Depuración

@@ -35,8 +35,8 @@ const addCount = async(req, res) => {
             endDate: endDate
         }
 
-        await CountDAO.createCount(count);
-        res.json(count);
+        const createdCount = await CountDAO.createCount(count);
+        res.json(createdCount);
     } catch (error) {
         throw new AppError('No se pudo agregar la cuenta', 500);
     }

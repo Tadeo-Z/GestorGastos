@@ -45,21 +45,23 @@ const getUserGroupGroup = async(req, res) => {
 
 const addUserGroup = async(req, res) => {
     try {
-        const { entryDate, rol } = req.body;
+        const { entryDate, rol, userId, groupId } = req.body;
 
-        if(!entryDate || !rol) {
+        if(!entryDate || !rol || !userId || !groupId) {
             throw new AppError('Faltan campos que llenar', 500);
         }
 
         const userGroup = {
             entryDate: entryDate,
-            rol: rol
+            rol: rol,
+            userId: userId,
+            groupId: groupId
         }
 
-        await UserGroupDAO.createUserGroup(userGroup);
+        await UserGroupDAO.createUserGroup(userId, groupId, userGroup);
         res.json(userGroup);
     } catch (error) {
-        throw new AppError('No se pudo agregar el grupo con usuarios', 500);
+        throw new AppError('No se pudo agregar el grupo con usuarios' + error.message, 500);
     }
 }
 

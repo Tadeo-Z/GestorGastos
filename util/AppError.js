@@ -20,17 +20,36 @@ class AppError extends Error {
 }
 
 const globalErrorHandler = (err, req, res, next) => {
-    err.statusCode = err.statusCode || 500;
-    err.status = err.status || 'error';
-    logger.error(err.message);
+     // Asegura que los errores también incluyan los headers CORS
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    err.statusCode = err.statusCode || 500; // Establecer el código de estado por defecto
+    err.status = err.status || 'error'; // Establecer el estado por defecto
 
+    // Loggear los errores
+    logger.error(`Error: ${err.message}`); // Registrar los errores en la consola o en un archivo de log
+
+    // Validación de errores de entrada (express-validator)
+    if (err.errors) {
+        return res.status(400).json({
+            status: 'fail',
+            statusCode: 400,
+            message: 'Datos inválidos',
+            errors: err.errors, // Devuelve las validaciones fallidas
+        });
+    }
+
+    // Responder con el error
     res.status(err.statusCode).json({
         status: err.status,
-        statusCode: err.statusCode,
-        message: err.message,
-        error: err
-    })
-}
+        message: err.message || 'Error interno del servidor',
+        error: process.env.NODE_ENV === 'development' ? err : undefined, // Muestra detalles solo en desarrollo
+    });
+};
+
+module.exports = globalErrorHandler;
+
 
 module.exports = {
     AppError,

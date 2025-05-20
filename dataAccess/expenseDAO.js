@@ -21,12 +21,13 @@ class ExpenseDAO {
         }
     }
 
-    // Crear un nuevo gasto
-    static async createExpense(expenseData) {
+    // Obtener gastos por el id del usuario
+    static async getExpensesByUserId(userId) {
         try {
-            return await Expense.create(expenseData);
+            const expenses = await Expense.findAll({ where: { userId: userId }});
+            return expenses;
         } catch (error) {
-            console.log('Error creando el gasto: ', error);
+            console.log('Error obteniendo los gastos: ', error);
             throw error;
         }
     }
@@ -62,6 +63,21 @@ class ExpenseDAO {
             return deleted > 0;
         } catch (error) {
             console.log('Error eliminando el gasto: ', error);
+            throw error;
+        }
+    }
+
+    static async pagarExpense(id) {
+        try {
+            const [updatedRows] = await Expense.update(
+                { paid: 1 }, { where: { id: id } }
+            );
+    
+            if (updatedRows === 0) return null;
+    
+            return await Expense.findByPk(id);
+        } catch (error) {
+            console.log('Error pagando el gasto: ', error);
             throw error;
         }
     }
